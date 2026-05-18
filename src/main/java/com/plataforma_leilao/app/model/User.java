@@ -1,11 +1,7 @@
 package com.plataforma_leilao.app.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Data;
 
 @Entity
@@ -24,5 +20,17 @@ public class User {
     private String senha;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private EUserPermission permissao;
+
+    @Column(nullable = false)
     private boolean ativo = true;
+
+    public User() {}
+
+    public User(String email, String senha) {
+        this.email = email;
+        this.senha = senha;
+        this.permissao = EUserPermission.USER;
+    }
 }
