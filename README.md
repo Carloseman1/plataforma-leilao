@@ -10,6 +10,9 @@ Centraliza o tratamento de erros da API, mapeando cada exceção para uma respos
 
 **E-mail já cadastrado** — Impede duplicidade no banco de dados retornando uma resposta legível com o código `EMAIL_CADASTRADO` e a mensagem `"O e-mail já está cadastrado."`, no lugar do stack trace padrão gerado pelo Spring.
 
+**Senha Vazia** - Impede que o usuário cadastre senha vazias dentro do banco de dados
+
+**Senha fora do padrão** - Impede que o usuário cadastre senha fracas no banco, com o intuito de segurança. 
 ---
 
 ### UserController
@@ -24,7 +27,7 @@ Responsável pelo mapeamento dos endpoints da API. Atualmente expõe o cadastro 
 
 **ErrorDTO** — Representa o contrato de erro da API com os campos `code` e `message`.
 
-**UserDTO** — Transporta os dados essenciais do usuário (`e-mail` e `senha`) para o cadastro.
+**UserDTO** — Transporta os dados essenciais do usuário (`nome`, `e-mail` e `senha`) para o cadastro.
 
 ---
 
