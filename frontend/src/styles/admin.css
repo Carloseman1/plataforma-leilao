@@ -1,0 +1,181 @@
+/* Administração — continua o visual Haras Real */
+
+.site-nav {
+  display: flex;
+  gap: 1rem;
+  flex: 1;
+  justify-content: center;
+}
+
+.site-nav a {
+  color: #c9bfa8;
+  text-decoration: none;
+  font-size: 0.88rem;
+  border-bottom: 1px solid transparent;
+}
+
+.site-nav a:hover {
+  color: #b98b3e;
+  border-bottom-color: #b98b3e;
+}
+
+.admin-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.admin-card-link {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 1.1rem 0;
+  border-bottom: 1px solid #d8ccae;
+  text-decoration: none;
+  color: inherit;
+}
+
+.admin-card-link strong {
+  font-family: 'Fraunces', serif;
+  font-size: 1.15rem;
+  font-weight: 500;
+}
+
+.admin-card-link span {
+  color: #5a5348;
+  font-size: 0.9rem;
+}
+
+.admin-panel {
+  margin-bottom: 2.5rem;
+}
+
+.admin-panel h2,
+.admin-subtitle {
+  font-family: 'Fraunces', serif;
+  font-weight: 500;
+  font-size: 1.2rem;
+  margin: 0 0 1rem;
+}
+
+.admin-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  max-width: 640px;
+}
+
+.admin-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.88rem;
+}
+
+.admin-form input,
+.admin-form select,
+.lotes-table select {
+  padding: 0.65rem 0.75rem;
+  border: 1px solid #d8ccae;
+  border-radius: 3px;
+  background: #fbf8f1;
+  font: inherit;
+  color: inherit;
+}
+
+.admin-form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.75rem;
+}
+
+.perm-fieldset {
+  border: 1px solid #d8ccae;
+  border-radius: 3px;
+  padding: 0.85rem 1rem;
+}
+
+.perm-fieldset legend {
+  padding: 0 0.35rem;
+  font-size: 0.85rem;
+}
+
+.perm-check {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center;
+  gap: 0.5rem !important;
+  margin-bottom: 0.45rem;
+  font-size: 0.9rem;
+}
+
+.admin-form-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.site-logout.dark {
+  border-color: #6e4a2e;
+  color: #6e4a2e;
+  background: transparent;
+}
+
+.grupo-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.grupo-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid #d8ccae;
+}
+
+.grupo-list p {
+  margin: 0.25rem 0;
+  color: #5a5348;
+  font-size: 0.9rem;
+}
+
+.grupo-list small {
+  color: #6e4a2e;
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  color: #6e4a2e;
+  cursor: pointer;
+  text-decoration: underline;
+  font: inherit;
+  align-self: flex-start;
+}
+
+.btn-primary {
+  width: auto;
+  align-self: flex-start;
+  padding: 0.85rem 1.2rem;
+  background: #6e4a2e;
+  color: #efe7d6;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.btn-primary:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+@media (max-width: 700px) {
+  .site-nav {
+    display: none;
+  }
+}

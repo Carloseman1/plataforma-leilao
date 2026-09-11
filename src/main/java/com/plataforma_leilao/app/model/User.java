@@ -1,7 +1,6 @@
 package com.plataforma_leilao.app.model;
 
 import jakarta.persistence.*;
-import lombok.Builder;
 import lombok.Data;
 
 @Entity
@@ -19,9 +18,17 @@ public class User {
     @Column(nullable = false)
     private String senha;
 
+    /**
+     * Papel legado rápido (ADMIN / USER).
+     * O detalhe das ações fica no grupo.
+     */
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private EUserPermission permissao;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "grupo_id")
+    private GrupoPermissao grupo;
 
     @Column(nullable = false)
     private boolean ativo = true;
@@ -32,5 +39,16 @@ public class User {
         this.email = email;
         this.senha = senha;
         this.permissao = EUserPermission.USER;
+    }
+
+    public boolean isAdmin() {
+        return permissao == EUserPermission.ADMIN;
+    }
+
+    public boolean temPermissao(EPermissao desejada) {
+        if (isAdmin()) {
+            return true;
+        }
+        return grupo != null && grupo.temPermissao(desejada);
     }
 }

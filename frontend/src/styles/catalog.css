@@ -1,0 +1,276 @@
+/* Catálogo e detalhe — visual Haras Real (continuidade do login) */
+
+.catalog-page {
+  min-height: 100vh;
+  background: #f1e9d8;
+  color: #1e1a15;
+  font-family: 'Inter', sans-serif;
+}
+
+.site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.1rem 2rem;
+  background: #17261b;
+  color: #efe7d6;
+  border-bottom: 1px solid rgba(185, 139, 62, 0.28);
+}
+
+.site-brand {
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: inherit;
+}
+
+.site-brand-mark {
+  font-family: 'Fraunces', serif;
+  letter-spacing: 0.12em;
+  font-size: 0.85rem;
+  color: #b98b3e;
+}
+
+.site-brand-sub {
+  font-family: 'Fraunces', serif;
+  font-size: 1.15rem;
+  font-weight: 500;
+}
+
+.site-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.site-user {
+  font-size: 0.85rem;
+  color: #c9bfa8;
+}
+
+.site-logout {
+  background: transparent;
+  border: 1px solid rgba(239, 231, 214, 0.35);
+  color: #efe7d6;
+  padding: 0.4rem 0.85rem;
+  border-radius: 3px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.85rem;
+}
+
+.site-logout:hover {
+  border-color: #b98b3e;
+  color: #b98b3e;
+}
+
+.catalog-main {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 4rem;
+}
+
+.catalog-intro h1,
+.detalhe-intro h1 {
+  font-family: 'Fraunces', serif;
+  font-weight: 500;
+  font-size: 2rem;
+  margin: 0 0 0.4rem;
+  color: #1e1a15;
+}
+
+.catalog-intro p,
+.detalhe-sub,
+.detalhe-info {
+  margin: 0;
+  color: #5a5348;
+  line-height: 1.5;
+}
+
+.catalog-intro {
+  margin-bottom: 2rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid #d8ccae;
+}
+
+.catalog-state {
+  color: #5a5348;
+}
+
+.catalog-state--erro {
+  color: #9b2c2c;
+}
+
+.leilao-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.leilao-item {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1.6rem 0;
+  border-bottom: 1px solid #d8ccae;
+}
+
+.leilao-item-meta {
+  display: flex;
+  gap: 0.85rem;
+  align-items: center;
+  margin: 0 0 0.45rem;
+  font-size: 0.8rem;
+  color: #5a5348;
+}
+
+.status {
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #6e4a2e;
+}
+
+.status--encerrado {
+  color: #8a8070;
+}
+
+.status--em_andamento {
+  color: #2f6b3a;
+}
+
+.leilao-item-title {
+  font-family: 'Fraunces', serif;
+  font-weight: 500;
+  font-size: 1.35rem;
+  margin: 0 0 0.35rem;
+}
+
+.leilao-item-sub {
+  margin: 0 0 0.45rem;
+  color: #5a5348;
+  font-size: 0.95rem;
+}
+
+.leilao-item-info {
+  margin: 0;
+  font-size: 0.88rem;
+  color: #5a5348;
+}
+
+.leilao-item-link {
+  flex-shrink: 0;
+  text-decoration: none;
+  background: #6e4a2e;
+  color: #efe7d6;
+  padding: 0.7rem 1.1rem;
+  border-radius: 3px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.leilao-item-link:hover {
+  background: #5c3d26;
+}
+
+.back-link {
+  margin: 0 0 1.5rem;
+}
+
+.back-link a {
+  color: #6e4a2e;
+  text-decoration: none;
+  font-size: 0.9rem;
+  border-bottom: 1px solid transparent;
+}
+
+.back-link a:hover {
+  border-bottom-color: #6e4a2e;
+}
+
+.detalhe-intro {
+  margin-bottom: 2rem;
+}
+
+.detalhe-status {
+  margin: 0 0 0.5rem;
+}
+
+.detalhe-intro h1 {
+  margin-bottom: 0.5rem;
+}
+
+.detalhe-sub {
+  margin-bottom: 0.6rem !important;
+}
+
+.lotes-section h2 {
+  font-family: 'Fraunces', serif;
+  font-weight: 500;
+  font-size: 1.25rem;
+  margin: 0 0 1rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid #d8ccae;
+}
+
+.lotes-table-wrap {
+  overflow-x: auto;
+}
+
+.lotes-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.lotes-table th {
+  text-align: left;
+  font-weight: 500;
+  color: #5a5348;
+  padding: 0.65rem 0.75rem 0.65rem 0;
+  border-bottom: 1px solid #d8ccae;
+  white-space: nowrap;
+}
+
+.lotes-table td {
+  padding: 1rem 0.75rem 1rem 0;
+  border-bottom: 1px solid #e4d9c0;
+  vertical-align: top;
+}
+
+.lote-num {
+  font-family: 'Fraunces', serif;
+  color: #6e4a2e;
+  font-weight: 500;
+}
+
+.lote-desc {
+  display: block;
+  margin-top: 0.25rem;
+  color: #5a5348;
+  font-size: 0.82rem;
+  font-weight: 400;
+  max-width: 280px;
+}
+
+.lote-valor {
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+@media (max-width: 700px) {
+  .site-header {
+    padding: 1rem 1.2rem;
+  }
+
+  .site-user {
+    display: none;
+  }
+
+  .leilao-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
