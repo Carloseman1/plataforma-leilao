@@ -1,27 +1,65 @@
-/**
- * Sessão no navegador: guarda o JWT + dados básicos do usuário.
- */
-
 const STORAGE_KEY = 'haras_real_sessao'
 
-export function getSessao() {
+function lerSessao(storage) {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) return null
-    return JSON.parse(raw)
+    const raw = storage.getItem(STORAGE_KEY)
+    return raw ? JSON.parse(raw) : null
   } catch {
     return null
   }
+}
+
+function decodificarPayload(token) {
+  try {
+    const base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')
+    const bytes = atob(base64)
+    const json = decodeURIComponent(
+      Array.from(bytes, (c) => `%${c.charCodeAt(0).toString(16).padStart(2, '0')}`).join(''),
+    )
+    return JSON.parse(json)
+  } catch {
+    return null
+  }
+}
+
+/** Momento (ms) em que o JWT expira, ou null se o token não declarar `exp`. */
+export function getExpiracaoToken(token) {
+  const exp = decodificarPayload(token)?.exp
+  return typeof exp === 'number' ? exp * 1000 : null
+}
+
+export function tokenExpirado(token) {
+  const expiraEm = getExpiracaoToken(token)
+  return expiraEm !== null && expiraEm <= Date.now()
+}
+
+/** Sessão válida, ou null. Uma sessão com token expirado é descartada do storage. */
+export function getSessao() {
+  const sessao = lerSessao(localStorage) || lerSessao(sessionStorage)
+
+  if (!sessao?.token) {
+    return null
+  }
+
+  if (tokenExpirado(sessao.token)) {
+    limparSessao()
+    return null
+  }
+
+  return sessao
 }
 
 export function getToken() {
   return getSessao()?.token || null
 }
 
-export function salvarSessao(dados) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(dados))
+export function salvarSessao(dados, { lembrar = true } = {}) {
+  limparSessao()
+  const storage = lembrar ? localStorage : sessionStorage
+  storage.setItem(STORAGE_KEY, JSON.stringify(dados))
 }
 
 export function limparSessao() {
   localStorage.removeItem(STORAGE_KEY)
+  sessionStorage.removeItem(STORAGE_KEY)
 }

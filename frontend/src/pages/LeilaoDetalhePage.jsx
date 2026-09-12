@@ -1,17 +1,29 @@
-/**
- * Detalhe do leilão — lista de lotes (sem lance nesta fase).
- */
-
+import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import SiteHeader from '../components/catalog/SiteHeader'
-import LoteRow from '../components/catalog/LoteRow'
+import LoteCard from '../components/catalog/LoteCard'
+import AdicionarLoteCard from '../components/catalog/AdicionarLoteCard'
+import FormularioNovoLote from '../components/catalog/FormularioNovoLote'
+import useAuth from '../hooks/useAuth'
 import useLeilaoDetalhe from '../hooks/useLeilaoDetalhe'
 import { formatarDataHora, rotuloStatus } from '../utils/format'
+import { PERMISSOES, temPermissao } from '../utils/permissions'
 import '../styles/catalog.css'
+import '../styles/admin.css'
 
 export default function LeilaoDetalhePage() {
-  const { id } = useParams()
-  const { leilao, loading, erro } = useLeilaoDetalhe(id)
+  const { uuid } = useParams()
+  const { usuario } = useAuth()
+  const { leilao, loading, erro, recarregar } = useLeilaoDetalhe(uuid)
+  const [formAberto, setFormAberto] = useState(false)
+
+  const lotes = leilao?.lotes || []
+  const podeAdicionarLote = temPermissao(usuario, PERMISSOES.CRIAR_LEILAO)
+
+  function aoCriarLote() {
+    setFormAberto(false)
+    recarregar()
+  }
 
   return (
     <div className="catalog-page">
@@ -39,33 +51,37 @@ export default function LeilaoDetalhePage() {
                 {formatarDataHora(leilao.dataInicio)}
                 {leilao.local ? ` · ${leilao.local}` : ''}
               </p>
+              <p className="detalhe-acoes">
+                <Link className="leilao-item-link" to={`/leiloes/${uuid}/pregao`}>
+                  Entrar no pregão ao vivo
+                </Link>
+              </p>
             </header>
 
             <section className="lotes-section">
               <h2>Lotes</h2>
-              {(!leilao.lotes || leilao.lotes.length === 0) ? (
+
+              {lotes.length === 0 && !podeAdicionarLote && (
                 <p className="catalog-state">Este leilão ainda não tem lotes.</p>
-              ) : (
-                <div className="lotes-table-wrap">
-                  <table className="lotes-table">
-                    <thead>
-                      <tr>
-                        <th>Nº</th>
-                        <th>Animal</th>
-                        <th>Raça</th>
-                        <th>Sexo</th>
-                        <th>Idade</th>
-                        <th>Lance inicial</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {leilao.lotes.map((lote) => (
-                        <LoteRow key={lote.id} lote={lote} />
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
               )}
+
+              {formAberto && (
+                <FormularioNovoLote
+                  uuidLeilao={uuid}
+                  onCancelar={() => setFormAberto(false)}
+                  onCriado={aoCriarLote}
+                />
+              )}
+
+              <div className="lotes-grid">
+                {lotes.map((lote) => (
+                  <LoteCard key={lote.uuid} lote={lote} />
+                ))}
+
+                {podeAdicionarLote && !formAberto && (
+                  <AdicionarLoteCard onClick={() => setFormAberto(true)} />
+                )}
+              </div>
             </section>
           </>
         )}

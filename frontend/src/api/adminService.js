@@ -1,7 +1,3 @@
-/**
- * API de administração (grupos e usuários).
- */
-
 import { get, post, put } from './httpClient'
 
 export function listarGrupos() {

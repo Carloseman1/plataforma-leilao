@@ -1,7 +1,3 @@
-/**
- * Item do catálogo — linha editorial (título, data, status, link).
- */
-
 import { Link } from 'react-router-dom'
 import { formatarDataHora, rotuloStatus } from '../../utils/format'
 
@@ -25,7 +21,7 @@ export default function LeilaoListItem({ leilao }) {
         </p>
       </div>
 
-      <Link className="leilao-item-link" to={`/leiloes/${leilao.id}`}>
+      <Link className="leilao-item-link" to={`/leiloes/${leilao.uuid}`}>
         Entrar no leilão
       </Link>
     </article>

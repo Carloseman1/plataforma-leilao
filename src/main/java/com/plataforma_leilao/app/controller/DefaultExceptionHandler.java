@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @RestControllerAdvice
 public class DefaultExceptionHandler {
@@ -14,6 +15,12 @@ public class DefaultExceptionHandler {
     public ResponseEntity<ErrorDTO> handlException(Exception ex) {
         ErrorDTO error = new ErrorDTO("ERRO_INESPERADO", "Ocorreu um erro inesperado");
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorDTO> handleParametroInvalido(MethodArgumentTypeMismatchException ex) {
+        ErrorDTO error = new ErrorDTO("PARAMETRO_INVALIDO", "Identificador inválido.");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
     @ExceptionHandler(EmailCadastradoException.class)
@@ -41,6 +48,27 @@ public class DefaultExceptionHandler {
     public ResponseEntity<ErrorDTO> handleLeilaoNaoEncontrado(LeilaoNaoEncontradoException ex) {
         ErrorDTO error = new ErrorDTO("LEILAO_NAO_ENCONTRADO", "Leilão não encontrado.");
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
+
+    @ExceptionHandler(PregaoInvalidoException.class)
+    public ResponseEntity<ErrorDTO> handlePregaoInvalido(PregaoInvalidoException ex) {
+        ErrorDTO error = new ErrorDTO("PREGAO_INVALIDO", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    }
+
+    @ExceptionHandler(PregaoIndisponivelException.class)
+    public ResponseEntity<ErrorDTO> handlePregaoIndisponivel(PregaoIndisponivelException ex) {
+        ErrorDTO error = new ErrorDTO(
+                "PREGAO_INDISPONIVEL",
+                "O lance não entrou na fila: o broker do pregão está fora do ar."
+        );
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(error);
+    }
+
+    @ExceptionHandler(LeilaoEncerradoException.class)
+    public ResponseEntity<ErrorDTO> handleLeilaoEncerrado(LeilaoEncerradoException ex) {
+        ErrorDTO error = new ErrorDTO("LEILAO_ENCERRADO", "Este leilão não aceita novos lotes.");
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
 
     @ExceptionHandler(CredenciaisInvalidasException.class)

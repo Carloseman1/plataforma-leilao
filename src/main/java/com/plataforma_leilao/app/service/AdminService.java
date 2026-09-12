@@ -86,7 +86,6 @@ public class AdminService {
 
         user.setGrupo(grupo);
 
-        // Mantém o papel ADMIN só para quem já é admin do sistema
         if (!user.isAdmin()) {
             user.setPermissao(EUserPermission.USER);
         }

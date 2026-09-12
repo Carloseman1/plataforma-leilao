@@ -1,7 +1,3 @@
-/**
- * Campo de formulário (label + input) no estilo Haras Real.
- */
-
 export default function FormField({
   id,
   label,
@@ -12,20 +8,24 @@ export default function FormField({
   placeholder,
   required = true,
   minLength,
+  action,
 }) {
   return (
     <div className="field">
       <label htmlFor={id}>{label}</label>
-      <input
-        id={id}
-        type={type}
-        value={value}
-        onChange={onChange}
-        autoComplete={autoComplete}
-        placeholder={placeholder}
-        required={required}
-        minLength={minLength}
-      />
+      <div className="field-control">
+        <input
+          id={id}
+          type={type}
+          value={value}
+          onChange={onChange}
+          autoComplete={autoComplete}
+          placeholder={placeholder}
+          required={required}
+          minLength={minLength}
+        />
+        {action}
+      </div>
     </div>
   )
 }

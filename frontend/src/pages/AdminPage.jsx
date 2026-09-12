@@ -1,7 +1,3 @@
-/**
- * Hub da administração.
- */
-
 import { Link } from 'react-router-dom'
 import SiteHeader from '../components/catalog/SiteHeader'
 import useAuth from '../hooks/useAuth'

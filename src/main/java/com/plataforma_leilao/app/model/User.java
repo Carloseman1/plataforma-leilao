@@ -18,10 +18,6 @@ public class User {
     @Column(nullable = false)
     private String senha;
 
-    /**
-     * Papel legado rápido (ADMIN / USER).
-     * O detalhe das ações fica no grupo.
-     */
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private EUserPermission permissao;

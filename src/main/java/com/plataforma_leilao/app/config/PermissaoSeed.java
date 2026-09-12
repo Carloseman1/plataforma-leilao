@@ -13,9 +13,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.EnumSet;
 
-/**
- * Cria grupos padrão e garante o admin do sistema.
- */
 @Component
 @Order(1)
 public class PermissaoSeed implements ApplicationRunner {

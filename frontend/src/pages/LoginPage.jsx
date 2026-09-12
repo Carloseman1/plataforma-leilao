@@ -1,12 +1,7 @@
-/**
- * Página de Login — layout Haras Real.
- * Lógica em useLogin; visual em AuthLayout + styles/auth.css.
- */
-
-import { useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import AuthLayout, { AuthLink } from '../components/AuthLayout'
 import FormField from '../components/FormField'
+import PasswordField from '../components/PasswordField'
 import Button from '../components/Button'
 import FeedbackMessage from '../components/FeedbackMessage'
 import useLogin from '../hooks/useLogin'
@@ -15,13 +10,14 @@ import { SENHA_MIN_LENGTH } from '../utils/passwordRules'
 export default function LoginPage() {
   const location = useLocation()
   const mensagemCadastro = location.state?.mensagem
-  const [lembrar, setLembrar] = useState(false)
 
   const {
     email,
     setEmail,
     password,
     setPassword,
+    lembrar,
+    setLembrar,
     erro,
     sucesso,
     loading,
@@ -53,10 +49,8 @@ export default function LoginPage() {
           placeholder="seunome@email.com"
         />
 
-        <FormField
+        <PasswordField
           id="senha"
-          label="Senha"
-          type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           autoComplete="current-password"

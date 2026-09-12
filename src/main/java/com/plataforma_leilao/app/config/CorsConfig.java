@@ -10,10 +10,6 @@ import org.springframework.web.filter.CorsFilter;
 
 import java.util.List;
 
-/**
- * CORS para o front (Vite) conseguir chamar a API com Authorization.
- * Prioridade alta para rodar antes do JwtAuthFilter.
- */
 @Configuration
 public class CorsConfig {
 

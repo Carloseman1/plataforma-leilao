@@ -15,10 +15,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-/**
- * Cria e valida tokens JWT.
- * Cada token recebe um UUID em "jti" (id único da sessão).
- */
 @Service
 public class JwtService {
 

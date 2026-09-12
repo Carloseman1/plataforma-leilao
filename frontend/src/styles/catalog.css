@@ -1,5 +1,3 @@
-/* Catálogo e detalhe — visual Haras Real (continuidade do login) */
-
 .catalog-page {
   min-height: 100vh;
   background: #f1e9d8;
@@ -215,50 +213,12 @@
   border-bottom: 1px solid #d8ccae;
 }
 
-.lotes-table-wrap {
-  overflow-x: auto;
-}
 
-.lotes-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.9rem;
-}
 
-.lotes-table th {
-  text-align: left;
-  font-weight: 500;
-  color: #5a5348;
-  padding: 0.65rem 0.75rem 0.65rem 0;
-  border-bottom: 1px solid #d8ccae;
-  white-space: nowrap;
-}
 
-.lotes-table td {
-  padding: 1rem 0.75rem 1rem 0;
-  border-bottom: 1px solid #e4d9c0;
-  vertical-align: top;
-}
 
-.lote-num {
-  font-family: 'Fraunces', serif;
-  color: #6e4a2e;
-  font-weight: 500;
-}
 
-.lote-desc {
-  display: block;
-  margin-top: 0.25rem;
-  color: #5a5348;
-  font-size: 0.82rem;
-  font-weight: 400;
-  max-width: 280px;
-}
 
-.lote-valor {
-  white-space: nowrap;
-  font-weight: 600;
-}
 
 @media (max-width: 700px) {
   .site-header {
@@ -273,4 +233,167 @@
     flex-direction: column;
     align-items: flex-start;
   }
+}
+
+.lotes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.8rem;
+  margin-top: 1.6rem;
+}
+
+.lote-card {
+  display: flex;
+  flex-direction: column;
+  background: #fbf8f1;
+  border: 1px solid #e0d5ba;
+  overflow: hidden;
+}
+
+.lote-foto {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  background: #e6dcc4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lote-foto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.lote-foto-vazia {
+  font-size: 0.78rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #a69c85;
+}
+
+.lote-selo {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  padding: 0.35rem 0.8rem;
+  background: rgba(23, 38, 27, 0.88);
+  color: #efe7d6;
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.lote-corpo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding: 1.1rem 1.2rem 1.3rem;
+}
+
+.lote-corpo h3 {
+  font-family: 'Fraunces', serif;
+  font-weight: 500;
+  font-size: 1.2rem;
+  margin: 0;
+  color: #1e1a15;
+}
+
+.lote-ficha {
+  margin: 0;
+  font-size: 0.82rem;
+  color: #5a5348;
+}
+
+.lote-oferta {
+  align-self: flex-start;
+  padding: 0.25rem 0.6rem;
+  border: 1px solid rgba(185, 139, 62, 0.55);
+  color: #8a6522;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.lote-desc {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: #5a5348;
+  text-wrap: pretty;
+}
+
+.lote-valores {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0.4rem 0 0;
+  padding-top: 0.9rem;
+  border-top: 1px solid #e0d5ba;
+}
+
+.lote-valores div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.lote-valores dt {
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #a69c85;
+}
+
+.lote-valores dd {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1e1a15;
+}
+
+.lote-proximo {
+  color: #8a6522;
+}
+
+.lote-novo {
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+  min-height: 300px;
+  border: 1px dashed #c3b493;
+  background: transparent;
+  color: #6e4a2e;
+  font: inherit;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.lote-novo:hover {
+  border-color: #6e4a2e;
+  background: #f6f1e4;
+}
+
+.lote-novo-sinal {
+  font-size: 2.6rem;
+  font-weight: 300;
+  line-height: 1;
+}
+
+.lote-novo-texto {
+  font-size: 0.76rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.lote-form {
+  margin-top: 1.6rem;
+  padding: 1.4rem 1.5rem 1.6rem;
+  background: #fbf8f1;
+  border: 1px solid #e0d5ba;
+}
+
+.lote-form .admin-subtitle {
+  margin-top: 0;
 }

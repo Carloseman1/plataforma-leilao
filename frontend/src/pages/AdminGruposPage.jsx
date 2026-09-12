@@ -1,7 +1,3 @@
-/**
- * Tela de grupos — criar e editar permissões do grupo.
- */
-
 import { useEffect, useState } from 'react'
 import SiteHeader from '../components/catalog/SiteHeader'
 import Button from '../components/Button'

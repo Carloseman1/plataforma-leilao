@@ -8,9 +8,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-/**
- * Descobre o usuário logado a partir do email colocado no request pelo JwtAuthFilter.
- */
 @Component
 public class UsuarioAutenticado {
 

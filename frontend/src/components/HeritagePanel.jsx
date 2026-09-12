@@ -1,9 +1,4 @@
-/**
- * Painel esquerdo (marca / herança visual).
- * Compartilhado por Login e Cadastro.
- */
-
-import HorseLineArt from './HorseLineArt'
+import HorsePortrait from './HorsePortrait'
 
 export default function HeritagePanel() {
   return (
@@ -17,9 +12,7 @@ export default function HeritagePanel() {
         </h1>
       </div>
 
-      <div className="horse-wrap">
-        <HorseLineArt />
-      </div>
+      <HorsePortrait />
 
       <div className="heritage-foot">
         <p className="foot-line">

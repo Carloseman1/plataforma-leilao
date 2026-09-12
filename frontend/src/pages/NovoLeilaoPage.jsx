@@ -1,13 +1,10 @@
-/**
- * Formulário simples para criar leilão (somente quem tem CRIAR_LEILAO).
- */
-
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import SiteHeader from '../components/catalog/SiteHeader'
 import Button from '../components/Button'
 import FeedbackMessage from '../components/FeedbackMessage'
 import { criarLeilao } from '../api/leilaoService'
+import { nascimentoPorIdade } from '../utils/lote'
 import '../styles/catalog.css'
 import '../styles/admin.css'
 
@@ -60,18 +57,19 @@ export default function NovoLeilaoPage() {
         lotes: [
           {
             numero: Number(form.loteNumero),
-            nomeAnimal: form.loteNome,
-            sexo: form.loteSexo,
-            raca: form.loteRaca,
-            idadeAnos: Number(form.loteIdade),
-            pelagem: '',
-            registro: '',
-            descricaoCurta: '',
-            lanceInicial: Number(form.loteLance),
+            tipoOferta: 'VENDA_ANIMAL',
+            valorInicial: Number(form.loteLance),
+            incrementoMinimo: 500,
+            animal: {
+              nome: form.loteNome,
+              sexo: form.loteSexo,
+              raca: form.loteRaca,
+              dataNascimento: nascimentoPorIdade(form.loteIdade),
+            },
           },
         ],
       })
-      navigate(`/leiloes/${criado.id}`)
+      navigate(`/leiloes/${criado.uuid}`)
     } catch (err) {
       setErro(err.message)
     } finally {

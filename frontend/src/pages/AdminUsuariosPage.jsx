@@ -1,7 +1,3 @@
-/**
- * Atribuir grupo a usuários.
- */
-
 import { useEffect, useState } from 'react'
 import SiteHeader from '../components/catalog/SiteHeader'
 import FeedbackMessage from '../components/FeedbackMessage'

@@ -1,7 +1,3 @@
-/**
- * Formatação de datas e valores para o catálogo.
- */
-
 export function formatarDataHora(iso) {
   if (!iso) return '—'
   const data = new Date(iso)

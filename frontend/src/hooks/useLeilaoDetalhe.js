@@ -1,17 +1,17 @@
-/**
- * Hook: detalhe de um leilão (com lotes).
- */
-
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { buscarLeilao } from '../api/leilaoService'
 
-export default function useLeilaoDetalhe(id) {
+export default function useLeilaoDetalhe(uuid) {
   const [leilao, setLeilao] = useState(null)
   const [loading, setLoading] = useState(true)
   const [erro, setErro] = useState('')
+  const [recargas, setRecargas] = useState(0)
+
+  // Mexer no contador faz o efeito abaixo buscar o leilão de novo.
+  const recarregar = useCallback(() => setRecargas((total) => total + 1), [])
 
   useEffect(() => {
-    if (!id) return undefined
+    if (!uuid) return undefined
 
     let ativo = true
 
@@ -19,7 +19,7 @@ export default function useLeilaoDetalhe(id) {
       setLoading(true)
       setErro('')
       try {
-        const dados = await buscarLeilao(id)
+        const dados = await buscarLeilao(uuid)
         if (ativo) setLeilao(dados)
       } catch (err) {
         if (ativo) setErro(err.message)
@@ -32,7 +32,7 @@ export default function useLeilaoDetalhe(id) {
     return () => {
       ativo = false
     }
-  }, [id])
+  }, [uuid, recargas])
 
-  return { leilao, loading, erro }
+  return { leilao, loading, erro, recarregar }
 }

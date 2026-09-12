@@ -5,10 +5,11 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Data
 public class LeilaoDetalheDTO {
-    private Long id;
+    private UUID uuid;
     private String titulo;
     private String subtitulo;
     private String local;
@@ -17,10 +18,10 @@ public class LeilaoDetalheDTO {
     private ELeilaoStatus status;
     private List<LoteDTO> lotes;
 
-    public LeilaoDetalheDTO(Long id, String titulo, String subtitulo, String local,
+    public LeilaoDetalheDTO(UUID uuid, String titulo, String subtitulo, String local,
                             LocalDateTime dataInicio, LocalDateTime dataFim,
                             ELeilaoStatus status, List<LoteDTO> lotes) {
-        this.id = id;
+        this.uuid = uuid;
         this.titulo = titulo;
         this.subtitulo = subtitulo;
         this.local = local;

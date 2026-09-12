@@ -13,13 +13,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-/**
- * Lê o header Authorization e libera ou bloqueia a requisição.
- * Rotas públicas: login e cadastro.
- *
- * Observação: erro no Filter NÃO passa pelo @RestControllerAdvice,
- * por isso a resposta 401 é montada aqui.
- */
 @Component
 @Order(2)
 public class JwtAuthFilter extends OncePerRequestFilter {

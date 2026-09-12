@@ -1,18 +1,15 @@
-/**
- * Hook do formulário de login.
- * Em sucesso, grava sessão via contexto e redireciona ao catálogo.
- */
-
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { loginUsuario } from '../api/userService'
 import useAuth from './useAuth'
 
 export default function useLogin() {
   const navigate = useNavigate()
+  const location = useLocation()
   const { login } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [lembrar, setLembrar] = useState(false)
   const [erro, setErro] = useState('')
   const [sucesso, setSucesso] = useState('')
   const [loading, setLoading] = useState(false)
@@ -25,8 +22,8 @@ export default function useLogin() {
 
     try {
       const usuario = await loginUsuario({ email, password })
-      login(usuario)
-      navigate('/catalogo')
+      login(usuario, { lembrar })
+      navigate(location.state?.from?.pathname || '/catalogo', { replace: true })
     } catch (err) {
       setErro(err.message)
     } finally {
@@ -39,6 +36,8 @@ export default function useLogin() {
     setEmail,
     password,
     setPassword,
+    lembrar,
+    setLembrar,
     erro,
     sucesso,
     loading,

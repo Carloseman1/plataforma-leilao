@@ -1,7 +1,3 @@
-/**
- * Catálogo de leilões — tela inicial após login.
- */
-
 import SiteHeader from '../components/catalog/SiteHeader'
 import LeilaoListItem from '../components/catalog/LeilaoListItem'
 import useLeiloes from '../hooks/useLeiloes'
@@ -29,7 +25,7 @@ export default function CatalogoPage() {
 
         <div className="leilao-list">
           {leiloes.map((leilao) => (
-            <LeilaoListItem key={leilao.id} leilao={leilao} />
+            <LeilaoListItem key={leilao.uuid} leilao={leilao} />
           ))}
         </div>
       </main>

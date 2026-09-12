@@ -1,7 +1,3 @@
-/**
- * Botão — variant: "primary" (padrão do layout).
- */
-
 export default function Button({
   children,
   type = 'button',

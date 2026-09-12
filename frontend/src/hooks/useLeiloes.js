@@ -1,7 +1,3 @@
-/**
- * Hook: lista de leilões do catálogo.
- */
-
 import { useEffect, useState } from 'react'
 import { listarLeiloes } from '../api/leilaoService'
 

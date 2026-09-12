@@ -1,9 +1,6 @@
-/**
- * Página de Cadastro — mesmo layout Haras Real do login.
- */
-
 import AuthLayout, { AuthLink } from '../components/AuthLayout'
 import FormField from '../components/FormField'
+import PasswordField from '../components/PasswordField'
 import Button from '../components/Button'
 import FeedbackMessage from '../components/FeedbackMessage'
 import useCadastro from '../hooks/useCadastro'
@@ -44,10 +41,8 @@ export default function CadastroPage() {
           placeholder="seunome@email.com"
         />
 
-        <FormField
+        <PasswordField
           id="cadastro-password"
-          label="Senha"
-          type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           autoComplete="new-password"

@@ -1,0 +1,414 @@
+.pregao-topo {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.4rem;
+  padding-bottom: 1.2rem;
+  border-bottom: 1px solid #d8ccae;
+}
+
+.pregao-topo h1 {
+  font-family: 'Fraunces', serif;
+  font-weight: 500;
+  font-size: 1.8rem;
+  margin: 0.3rem 0 0;
+}
+
+.pregao-comandos {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.pregao-comandos .btn-primary {
+  width: auto;
+  padding: 0.75rem 1.1rem;
+  background: #6e4a2e;
+  color: #efe7d6;
+  border: none;
+  border-radius: 3px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sinal {
+  margin-left: 0.7rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.sinal--vivo {
+  color: #3d7a4a;
+}
+
+.sinal--mudo {
+  color: #a2762c;
+}
+
+.pregao-palco {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(260px, 1fr);
+  gap: 2rem;
+  align-items: start;
+}
+
+/* ------------------------------------------------------------ lote no palco */
+
+.pregao-lote {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  background: #fbf8f1;
+  border: 1px solid #e0d5ba;
+  overflow: hidden;
+}
+
+.pregao-foto {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  background: #e6dcc4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pregao-foto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.pregao-dados {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 1.3rem 1.4rem 1.5rem;
+}
+
+.pregao-dados h2 {
+  font-family: 'Fraunces', serif;
+  font-weight: 500;
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+.pregao-relogio {
+  margin: 0;
+  font-family: 'Fraunces', serif;
+  font-size: 2.2rem;
+  line-height: 1;
+  color: #6e4a2e;
+}
+
+.pregao-relogio--fim {
+  color: #a33b2a;
+}
+
+.pregao-valores {
+  display: flex;
+  gap: 2rem;
+  margin: 0.4rem 0 0.8rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid #e0d5ba;
+}
+
+.pregao-valores dt {
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #8a8070;
+}
+
+.pregao-valores dd {
+  margin: 0.25rem 0 0;
+}
+
+.pregao-valor-atual {
+  font-family: 'Fraunces', serif;
+  font-size: 1.35rem;
+}
+
+.pregao-valor-proximo {
+  font-family: 'Fraunces', serif;
+  font-size: 1.35rem;
+  color: #6e4a2e;
+}
+
+.pregao-comprador {
+  font-size: 0.82rem;
+  color: #5a5348;
+}
+
+.etiqueta-casa {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  background: #e8dcc0;
+  border: 1px solid #c9b68c;
+  border-radius: 2px;
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #6e4a2e;
+}
+
+/* --------------------------------------------------------------- lateral */
+
+.pregao-lateral {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.pregao-dica {
+  margin: 0.7rem 0 0;
+  font-size: 0.82rem;
+  color: #5a5348;
+}
+
+.feed-lances {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.feed-item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 0.7rem;
+  border-left: 3px solid transparent;
+  border-bottom: 1px solid #e6dcc4;
+  font-size: 0.85rem;
+}
+
+.feed-item--aceito {
+  border-left-color: #3d7a4a;
+}
+
+.feed-item--recusado {
+  border-left-color: #b8563f;
+  color: #6b6153;
+}
+
+.feed-valor {
+  font-weight: 600;
+}
+
+.feed-quem {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #5a5348;
+}
+
+.feed-desfecho {
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: right;
+}
+
+.pregao-fila {
+  margin: 0;
+  padding-left: 1.1rem;
+  font-size: 0.9rem;
+}
+
+.pregao-fila li {
+  padding: 0.35rem 0;
+}
+
+.pregao-fila span {
+  display: inline-block;
+  min-width: 2rem;
+  color: #8a8070;
+}
+
+.pregao-encerrados {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.pregao-encerrados li {
+  display: grid;
+  gap: 0.15rem;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid #e6dcc4;
+  font-size: 0.85rem;
+}
+
+.pregao-encerrado-valor {
+  font-weight: 600;
+}
+
+.desfecho {
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.desfecho--vendido {
+  color: #3d7a4a;
+}
+
+.desfecho--encerrado,
+.desfecho--reserva_nao_atingida {
+  color: #a2762c;
+}
+
+/* ------------------------------------------------------- reproduzir casos */
+
+.provocar {
+  margin-top: 1.6rem;
+  padding: 1.2rem 1.3rem 1.4rem;
+  background: #f6f1e4;
+  border: 1px dashed #c3b493;
+}
+
+.provocar-botoes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.7rem;
+}
+
+.provocar-botao {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.7rem 0.8rem;
+  background: #fbf8f1;
+  border: 1px solid #d8ccae;
+  border-radius: 3px;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.provocar-botao:hover:not(:disabled) {
+  border-color: #6e4a2e;
+}
+
+.provocar-botao:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.provocar-botao strong {
+  font-size: 0.88rem;
+}
+
+.provocar-botao span {
+  font-size: 0.76rem;
+  color: #6b6153;
+}
+
+/* ------------------------------------------------------------- recusas */
+
+.resumo-motivos {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.9rem;
+}
+
+.resumo-motivos li {
+  display: grid;
+  gap: 0.2rem;
+  padding: 0.9rem 1rem;
+  background: #fbf8f1;
+  border: 1px solid #e0d5ba;
+}
+
+.resumo-motivos strong {
+  font-family: 'Fraunces', serif;
+  font-size: 1.6rem;
+  line-height: 1;
+  color: #6e4a2e;
+}
+
+.resumo-motivos span {
+  font-size: 0.9rem;
+}
+
+.resumo-motivos small {
+  font-size: 0.78rem;
+  color: #6b6153;
+}
+
+.tabela-rolavel {
+  overflow-x: auto;
+}
+
+.tabela-recusas {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.86rem;
+}
+
+.tabela-recusas th {
+  text-align: left;
+  padding: 0.6rem 0.7rem;
+  border-bottom: 1px solid #d8ccae;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #8a8070;
+  white-space: nowrap;
+}
+
+.tabela-recusas td {
+  padding: 0.7rem;
+  border-bottom: 1px solid #e6dcc4;
+  vertical-align: top;
+}
+
+.motivo {
+  display: block;
+  font-weight: 600;
+}
+
+.motivo-explicacao {
+  display: block;
+  margin-top: 0.15rem;
+  color: #6b6153;
+}
+
+.lista-falhas {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 0.82rem;
+}
+
+.lista-falhas li {
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid #e6dcc4;
+}
+
+.lista-falhas code {
+  overflow-x: auto;
+  color: #6b6153;
+}
+
+.detalhe-acoes {
+  margin-top: 1rem;
+}
+
+@media (max-width: 900px) {
+  .pregao-palco,
+  .pregao-lote {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

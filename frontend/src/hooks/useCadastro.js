@@ -1,8 +1,3 @@
-/**
- * Hook do formulário de cadastro.
- * Valida senha no front (orientação) e chama o serviço.
- */
-
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { cadastrarUsuario } from '../api/userService'
@@ -30,7 +25,6 @@ export default function useCadastro() {
 
     try {
       await cadastrarUsuario({ email, password })
-      // Após cadastrar, manda o usuário para a tela de login
       navigate('/login', {
         state: { mensagem: 'Cadastro realizado! Faça login.' },
       })

@@ -1,8 +1,3 @@
-/**
- * Layout das telas de autenticação (Haras Real).
- * Esquerda = marca | Direita = formulário (children).
- */
-
 import { Link } from 'react-router-dom'
 import HeritagePanel from './HeritagePanel'
 import '../styles/auth.css'

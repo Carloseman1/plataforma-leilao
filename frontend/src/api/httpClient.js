@@ -1,8 +1,3 @@
-/**
- * Cliente HTTP genérico.
- * Envia o JWT no header Authorization quando existir.
- */
-
 import { getToken, limparSessao } from '../utils/session'
 
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080'
@@ -25,7 +20,7 @@ async function request(path, options = {}) {
 
   if (response.status === 401 && !path.includes('/api/user/login')) {
     limparSessao()
-    window.location.assign('/login')
+    window.location.replace('/login')
     throw new Error('Sessão expirada. Faça login novamente.')
   }
 

@@ -1,5 +1,3 @@
-/* Haras Real — telas de autenticação */
-
 :root {
   --forest: #17261b;
   --forest-2: #223a28;
@@ -15,20 +13,21 @@
 
 .stage {
   display: flex;
+  flex-wrap: wrap;
   width: 100%;
   min-height: 100vh;
+  background: var(--parchment);
 }
-
-/* ---------- Painel esquerdo ---------- */
 
 .heritage {
   position: relative;
-  flex: 1 1 46%;
+  flex: 1 1 460px;
+  min-height: 560px;
   background:
-    radial-gradient(circle at 78% 18%, rgba(185, 139, 62, 0.1), transparent 45%),
+    radial-gradient(circle at 78% 14%, rgba(185, 139, 62, 0.12), transparent 46%),
     linear-gradient(165deg, var(--forest) 0%, var(--forest-2) 100%);
   color: var(--cream-text);
-  padding: 4.2rem 4rem;
+  padding: 3.4rem 3.2rem;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -50,51 +49,109 @@
 
 .brand-mark {
   font-family: 'Fraunces', serif;
-  font-size: 1.15rem;
-  letter-spacing: 0.14em;
+  font-size: 1.05rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
   color: var(--gold);
-  margin: 0 0 0.35rem;
+  margin: 0 0 0.5rem;
 }
 
 .brand-name {
   font-family: 'Fraunces', serif;
   font-weight: 500;
-  font-size: 2.1rem;
-  line-height: 1.15;
+  font-size: clamp(1.9rem, 2.6vw, 2.35rem);
+  line-height: 1.14;
   margin: 0;
   color: var(--cream-text);
+  text-wrap: pretty;
 }
 
 .horse-wrap {
   position: relative;
   z-index: 1;
   flex: 1;
+  margin: 2.2rem 0;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin: 1.5rem 0;
+  animation: fade-in 0.9s ease both 0.2s;
 }
 
-.horse-wrap svg {
-  width: min(78%, 340px);
-  height: auto;
-  overflow: visible;
+.horse-frame {
+  position: relative;
+  width: min(100%, 400px);
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border: 1px solid rgba(185, 139, 62, 0.45);
+  box-shadow: 0 26px 60px -28px rgba(0, 0, 0, 0.75);
 }
 
-.horse-line {
-  fill: none;
-  stroke: var(--gold);
-  stroke-width: 1.4;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-dasharray: 1400;
-  stroke-dashoffset: 1400;
-  animation: draw 2.6s ease forwards 0.3s;
+.horse-photo {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  filter: saturate(0.82) contrast(1.04) brightness(0.94);
 }
 
-@keyframes draw {
+.horse-scrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(23, 38, 27, 0.18) 0%,
+    rgba(23, 38, 27, 0) 40%,
+    rgba(23, 38, 27, 0.55) 100%
+  );
+}
+
+.horse-inner-rule {
+  position: absolute;
+  inset: 8px;
+  border: 1px solid rgba(239, 231, 214, 0.16);
+  pointer-events: none;
+}
+
+.horse-caption {
+  margin-top: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  text-align: center;
+}
+
+.horse-name {
+  font-family: 'Fraunces', serif;
+  font-size: 1.3rem;
+  line-height: 1.2;
+  color: var(--cream-text);
+}
+
+.horse-tag {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  font-size: 0.74rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.horse-tag i {
+  width: 26px;
+  height: 1px;
+  background: rgba(185, 139, 62, 0.6);
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
   to {
-    stroke-dashoffset: 0;
+    opacity: 1;
   }
 }
 
@@ -115,9 +172,11 @@
   color: var(--cream-text-soft);
   max-width: 260px;
   margin: 0;
+  text-wrap: pretty;
 }
 
 .foot-stat {
+  flex: none;
   text-align: right;
 }
 
@@ -136,15 +195,13 @@
   margin-top: 0.3rem;
 }
 
-/* ---------- Painel direito ---------- */
-
 .desk {
-  flex: 1 1 54%;
+  flex: 1 1 520px;
   background: var(--parchment);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 3rem 2.5rem;
+  padding: 3.4rem 2.5rem;
   position: relative;
 }
 
@@ -188,6 +245,7 @@
   color: var(--ink-soft);
   font-size: 0.95rem;
   line-height: 1.5;
+  text-wrap: pretty;
 }
 
 .field {
@@ -202,6 +260,12 @@
   margin-bottom: 0.45rem;
 }
 
+.field-control {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
 .field input {
   width: 100%;
   padding: 0.85rem 1rem;
@@ -214,6 +278,10 @@
   transition:
     border-color 0.15s ease,
     box-shadow 0.15s ease;
+}
+
+.field-control:has(.field-action) input {
+  padding-right: 5.5rem;
 }
 
 .field input::placeholder {
@@ -231,10 +299,36 @@
   outline-offset: 1px;
 }
 
+.field-action {
+  position: absolute;
+  right: 0.5rem;
+  padding: 0.35rem 0.5rem;
+  background: none;
+  border: none;
+  border-radius: 2px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--leather);
+  cursor: pointer;
+}
+
+.field-action:hover {
+  background: rgba(110, 74, 46, 0.1);
+}
+
+.field-action:focus-visible {
+  outline: 2px solid var(--leather);
+  outline-offset: 1px;
+}
+
 .row-between {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 1rem;
   margin-bottom: 1.8rem;
   font-size: 0.87rem;
 }
@@ -250,6 +344,7 @@
 .remember input {
   width: 15px;
   height: 15px;
+  margin: 0;
   accent-color: var(--leather);
 }
 
@@ -338,7 +433,8 @@ a.link:focus-visible {
   font-size: 0.82rem;
   color: var(--ink-soft);
   line-height: 1.5;
-  margin-top: 1.9rem;
+  margin-top: 1.5rem;
+  text-wrap: pretty;
 }
 
 .auth-hint {
@@ -362,24 +458,16 @@ a.link:focus-visible {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .horse-line {
-    animation: none;
-    stroke-dashoffset: 0;
-  }
-
+  .horse-wrap,
   .form-card {
     animation: none;
   }
 }
 
 @media (max-width: 900px) {
-  .stage {
-    flex-direction: column;
-  }
-
   .heritage {
+    min-height: 320px;
     padding: 2.2rem 1.8rem;
-    min-height: 260px;
   }
 
   .heritage::before {
@@ -390,8 +478,12 @@ a.link:focus-visible {
     margin: 0.8rem 0;
   }
 
-  .horse-wrap svg {
-    width: 150px;
+  .horse-frame {
+    width: 180px;
+  }
+
+  .horse-name {
+    font-size: 1.05rem;
   }
 
   .foot-line {

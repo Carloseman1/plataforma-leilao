@@ -68,7 +68,6 @@ public class UserService {
             throw new CredenciaisInvalidasException();
         }
 
-        // Garante admin fixo mesmo se cadastrou antes do seed
         if (AdminConstants.EMAIL_ADMIN.equalsIgnoreCase(user.getEmail())) {
             promoverAdmin(user);
         }

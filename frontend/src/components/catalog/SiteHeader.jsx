@@ -1,7 +1,3 @@
-/**
- * Cabeçalho — mostra links de admin conforme a permissão.
- */
-
 import { Link, useNavigate } from 'react-router-dom'
 import useAuth from '../../hooks/useAuth'
 import { PERMISSOES, podeAdministrar, temPermissao } from '../../utils/permissions'

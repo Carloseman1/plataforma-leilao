@@ -1,7 +1,3 @@
-/**
- * Helpers de permissão no front (espelham o que veio no login).
- */
-
 export const PERMISSOES = {
   CRIAR_LEILAO: 'CRIAR_LEILAO',
   GERENCIAR_GRUPOS: 'GERENCIAR_GRUPOS',

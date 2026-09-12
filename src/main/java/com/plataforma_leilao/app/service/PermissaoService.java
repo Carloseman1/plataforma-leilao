@@ -6,9 +6,6 @@ import com.plataforma_leilao.app.model.User;
 import com.plataforma_leilao.app.security.UsuarioAutenticado;
 import org.springframework.stereotype.Service;
 
-/**
- * Checagem simples de permissão — fácil de ler e reutilizar.
- */
 @Service
 public class PermissaoService {
 
