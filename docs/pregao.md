@@ -70,7 +70,7 @@ compra o animal.
 
 ## Como rodar
 
-**1. Broker** (precisa de Docker):
+**1. Broker** (precisa de Docker). O padrão do repositório é o modo `direto`, sem broker — para usar a fila de verdade, suba o Redpanda e troque `app.pregao.transporte` para `kafka`:
 
 ```bash
 docker compose up -d
@@ -110,7 +110,7 @@ recusas mostra os perdedores com `VALOR_INSUFICIENTE`.
 app.pregao.transporte=direto
 ```
 
-O lance passa a ser avaliado dentro da própria requisição. A trava do lote
+É o padrão do repositório. O lance passa a ser avaliado dentro da própria requisição. A trava do lote
 continua valendo, então o resultado é correto — o que se perde é a ordenação por
 partição e o replay. Serve para desenvolver, não para valer.
 

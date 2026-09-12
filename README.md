@@ -37,13 +37,21 @@ As credenciais estão em `src/main/resources/application.properties` (`postgres`
 
 > `spring.jpa.hibernate.ddl-auto=validate`. O Hibernate não altera a estrutura do banco: quem faz isso é o Flyway. Campo novo na entidade sem migração correspondente derruba a aplicação na inicialização.
 
-### 2. Broker
+### 2. Broker (opcional)
+
+O projeto sobe sem broker: o padrão é `app.pregao.transporte=direto`, que avalia o lance dentro da própria requisição. Para exercitar a fila de verdade:
 
 ```bash
 docker compose up -d
 ```
 
-Sobe o Redpanda em `localhost:9092` e o console web em `localhost:8081`, onde dá para ver os tópicos, as partições e as mensagens — que trafegam em JSON puro.
+Sobe o Redpanda em `localhost:9092` e o console web em `localhost:8081`, onde dá para ver os tópicos, as partições e as mensagens — que trafegam em JSON puro. Com o broker no ar, troque em `application.properties`:
+
+```properties
+app.pregao.transporte=kafka
+```
+
+A aplicação diz na subida qual modo está ativo. Deixar `kafka` sem broker não derruba nada, mas o consumidor fica tentando reconectar e o log enche de `Rebootstrapping`.
 
 ### 3. Backend
 
@@ -86,11 +94,7 @@ O `--empate` é o que demonstra a regra de prioridade: só um lance entra, e os 
 
 ### Sem Docker
 
-```properties
-app.pregao.transporte=direto
-```
-
-O lance passa a ser avaliado dentro da própria requisição, sem broker. A trava do lote continua valendo, então o resultado é o mesmo — o que se perde é a ordenação por partição e o replay do tópico. Serve para desenvolver, não para valer.
+É o padrão do repositório (`app.pregao.transporte=direto`): o lance é avaliado dentro da própria requisição, sem broker. A trava do lote continua valendo, então o resultado é o mesmo — o que se perde é a ordenação por partição e o replay do tópico. Serve para desenvolver, não para valer.
 
 ### Primeiro acesso
 
@@ -417,8 +421,8 @@ O estado completo vem por REST e o canal traz o que muda com a tela aberta. Lanc
 ## Configuração
 
 ```properties
-# Transporte do lance: "kafka" passa pelo broker, "direto" avalia na requisição
-app.pregao.transporte=kafka
+# Transporte do lance: "direto" avalia na requisição, "kafka" passa pelo broker
+app.pregao.transporte=direto
 
 # Quanto tempo cada lote fica aberto quando ninguém dá lance
 app.pregao.segundos-por-lote=45
