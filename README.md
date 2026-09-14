@@ -163,7 +163,13 @@ Todo erro sai no mesmo formato, `{ "code": "...", "message": "..." }`, montado p
 
 ![Fluxo de um lance](docs/fluxo-do-lance.png)
 
-O controller responde `202` e publica na fila sem julgar nada. Do outro lado o avaliador decide se o lance entra, grava, e o desfecho volta para a tela pelo WebSocket.
+O caminho de um lance tem duas metades. Na primeira, o navegador manda o POST e o `PregaoController` responde `202` e publica na fila — ele não julga nada, só confirma que a tentativa entrou. Na segunda, o `ConsumidorDeLances` tira o lance da fila, o `AvaliadorDeLances` decide se ele vale e grava, e o `PainelDoPregao` devolve o desfecho pelo WebSocket. Entre o consumidor e o avaliador ainda passa o `ProcessadorDeLances`, que ficou fora do desenho porque só registra o lance no log e avisa o painel.
+
+Os dois de cima rodam sozinhos, a cada segundo. O `CompradorDaCasa` é um segundo produtor na mesma fila: depois de 8 segundos de silêncio publica um lance da casa, que passa exatamente pelas mesmas regras de um lance de comprador. O `RelogioDoPregao` é o único que escapa da fila — procura lote com o tempo vencido e bate o martelo direto no banco, que é como um lote fecha sozinho.
+
+Ficaram de fora do desenho os outros dois tópicos (`leilao.lances-resultado` e a DLT) e o modo `direto`, que pula a fila inteira. Os três estão explicados logo abaixo.
+
+A fila no meio existe por causa de um problema só: dois compradores cobrindo o mesmo lote no mesmo instante. Ela resolve isso pela chave da mensagem, não pela velocidade.
 
 São três tópicos: `leilao.lances` com as tentativas ainda sem julgamento, `leilao.lances-resultado` com o que o pregão decidiu, e `leilao.lances.DLT` com o que nem o retry conseguiu processar. Os dois primeiros têm 6 partições, a DLT tem uma.
 
@@ -257,6 +263,8 @@ Fala a API do Kafka, então o código Java é o mesmo. Sobe em segundos, é um b
 
 **`@Transactional` que não fazia nada.** O relógio do pregão chamava `lotesVencidos()`, anotado com `@Transactional(readOnly = true)`, de dentro de outro método da mesma classe. A transação nunca abria: a anotação funciona por proxy, e chamada interna não passa pelo proxy. Estava funcionando por sorte, porque os campos lidos eram todos básicos. Tirei a anotação em vez de deixar um enfeite que engana quem ler depois.
 
+**O e-mail não batia entre o cadastro e o login.** `findByEmail` e o índice único do Postgres comparam byte a byte, então `Carlos@haras.com` e `carlos@haras.com` viravam duas contas — e quem cadastrasse com maiúscula não entrava digitando minúscula. Passei a normalizar com `trim().toLowerCase()` na entrada do `cadastrar` e do `login`. Em base que já tenha conta com maiúscula precisa de um `UPDATE usuario SET email = LOWER(email)` antes, senão essas contas param de logar. O que ficou de fora foi diferenciar "e-mail não existe" de "senha errada" no login: continua tudo como `CREDENCIAIS_INVALIDAS`, de propósito, porque a mensagem específica entregaria quais e-mails têm conta na plataforma.
+
 **O canal do WebSocket estava aberto.** O `JwtAuthFilter` só protege `/api/`. O handshake vai em `/ws`, passava direto, e qualquer um assinava o canal de qualquer leilão. Corrigido com um `ChannelInterceptor` conferindo o token no CONNECT do STOMP.
 
 **O agendador cuspindo stack trace.** Com o broker fora do ar, o `CompradorDaCasa` tentava publicar a cada segundo e cada tentativa jogava a exceção inteira no log. Em pouco tempo não dava para achar mais nada. Passou a capturar a falha e registrar uma linha de aviso: o lance da casa deixa de sair, que é o comportamento certo sem fila, e o log continua legível.
@@ -269,7 +277,9 @@ Fala a API do Kafka, então o código Java é o mesmo. Sobe em segundos, é um b
 
 **O feed ao vivo mostra o e-mail de quem dá lance.** Num leilão real os concorrentes costumam ser anônimos entre si. As telas de diagnóstico já ficaram restritas a quem tem `CRIAR_LEILAO`; o feed continua aberto por decisão de simulação.
 
-**E-mail é sensível a maiúsculas.** `findByEmail` e o índice único comparam byte a byte, então `Carlos@haras.com` e `carlos@haras.com` viram duas contas. Falta normalizar na entrada do cadastro e do login.
+**A DLT só é listada, não reprocessada.** `/api/pregao/falhas` mostra o que parou lá, e para. Falta o caminho de volta: reenviar a mensagem para `leilao.lances` depois de resolver a causa. Hoje, lance que cai na DLT está perdido.
+
+**A normalização do e-mail é código, não constraint.** O `toLowerCase()` resolve para quem passa pelo serviço, mas o banco continua aceitando duas caixas diferentes se alguém inserir por fora. Um índice único em `lower(email)` fecharia de vez.
 
 **`rotuloStatus` não cobre todos os status.** O mapa em `utils/format.js` traduz `AGENDADO`, `EM_ANDAMENTO` e `ENCERRADO`. `RASCUNHO` e `CANCELADO` aparecem na tela com o nome cru do enum.
 
