@@ -1,5 +1,9 @@
 package com.plataforma_leilao.app.service;
 
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+
 import com.plataforma_leilao.app.config.AdminConstants;
 import com.plataforma_leilao.app.dto.LoginResponseDTO;
 import com.plataforma_leilao.app.exceptions.CredenciaisInvalidasException;
@@ -12,9 +16,6 @@ import com.plataforma_leilao.app.model.User;
 import com.plataforma_leilao.app.repository.GrupoPermissaoRepository;
 import com.plataforma_leilao.app.repository.UserRepository;
 import com.plataforma_leilao.app.security.JwtService;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
@@ -43,18 +44,19 @@ public class UserService {
             throw new SenhaCadastradaException();
         }
 
-        if (userRepository.findByEmail(email).isPresent()) {
+        String emailNormalizado = normalizar(email);
+
+        if (userRepository.findByEmail(emailNormalizado).isPresent()) {
             throw new EmailCadastradoException();
         }
 
-        User user = new User(email, encoder.encode(password));
+        User user = new User(emailNormalizado, encoder.encode(password));
         aplicarGrupoPadrao(user);
 
         try {
             userRepository.save(user);
         } catch (DataIntegrityViolationException e) {
-            if (e.getMessage() != null && (
-                    e.getMessage().contains("Duplicate entry")
+            if (e.getMessage() != null && (e.getMessage().contains("Duplicate entry")
                     || e.getMessage().contains("usuario_email_key"))) {
                 throw new EmailCadastradoException();
             }
@@ -67,7 +69,7 @@ public class UserService {
             throw new CredenciaisInvalidasException();
         }
 
-        User user = userRepository.findByEmail(email)
+        User user = userRepository.findByEmail(normalizar(email))
                 .orElseThrow(CredenciaisInvalidasException::new);
 
         if (!user.isAtivo() || !encoder.matches(password, user.getSenha())) {
@@ -111,5 +113,12 @@ public class UserService {
         user.setPermissao(EUserPermission.ADMIN);
         user.setGrupo(admin);
         userRepository.save(user);
+    }
+
+    private String normalizar(String email) {
+        if (email == null) {
+            throw new EmailCadastradoException();
+        }
+        return email.trim().toLowerCase();
     }
 }
