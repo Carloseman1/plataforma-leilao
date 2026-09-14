@@ -6,7 +6,7 @@ import com.plataforma_leilao.app.dto.UsuarioResumoDTO;
 import com.plataforma_leilao.app.exceptions.GrupoNaoEncontradoException;
 import com.plataforma_leilao.app.exceptions.UsuarioNaoEncontradoException;
 import com.plataforma_leilao.app.model.EPermissao;
-import com.plataforma_leilao.app.model.EUserPermission;
+import com.plataforma_leilao.app.model.EPapel;
 import com.plataforma_leilao.app.model.GrupoPermissao;
 import com.plataforma_leilao.app.model.User;
 import com.plataforma_leilao.app.repository.GrupoPermissaoRepository;
@@ -87,7 +87,7 @@ public class AdminService {
         user.setGrupo(grupo);
 
         if (!user.isAdmin()) {
-            user.setPermissao(EUserPermission.USER);
+            user.setPapel(EPapel.USER);
         }
 
         return toUsuarioDto(userRepository.save(user));

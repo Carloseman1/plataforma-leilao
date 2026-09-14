@@ -8,7 +8,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import com.plataforma_leilao.app.model.EPermissao;
-import com.plataforma_leilao.app.model.EUserPermission;
+import com.plataforma_leilao.app.model.EPapel;
 import com.plataforma_leilao.app.model.GrupoPermissao;
 import com.plataforma_leilao.app.repository.GrupoPermissaoRepository;
 import com.plataforma_leilao.app.repository.UserRepository;
@@ -57,7 +57,7 @@ public class PermissaoSeed implements ApplicationRunner {
 
     private void promoverAdminSeExistir(GrupoPermissao grupoAdmin) {
         userRepository.findByEmail(AdminConstants.EMAIL_ADMIN).ifPresent(user -> {
-            user.setPermissao(EUserPermission.ADMIN);
+            user.setPapel(EPapel.ADMIN);
             user.setGrupo(grupoAdmin);
             userRepository.save(user);
         });

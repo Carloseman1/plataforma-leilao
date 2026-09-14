@@ -2,7 +2,7 @@
 
 Leilão de cavalos Mangalarga Marchador: cadastro e login dos compradores, catálogo de leilões e lotes, administração de grupos e permissões, e o pregão ao vivo — onde os lances passam por uma fila no Kafka antes de serem julgados.
 
-As duas partes mais densas moram em arquivo próprio: [docs/pregao.md](docs/pregao.md) tem a arquitetura do pregão, [docs/modulo-leiloes.md](docs/modulo-leiloes.md) tem as decisões do catálogo.
+As decisões do catálogo — separar animal de lote, genealogia, valor de reserva — estão em [docs/modulo-leiloes.md](docs/modulo-leiloes.md).
 
 ## Stack
 
@@ -101,7 +101,7 @@ O **usuário** tem e-mail único, senha em BCrypt, um papel (`ADMIN`/`USER`) e u
 
 `leilao`, `lote` e `animal` carregam duas chaves: o `id BIGINT`, usado nas FKs, e o `uuid`, que é o que sai na API e na URL. O porquê está em [Identificador público em UUID](#identificador-público-em-uuid).
 
-Os enums do domínio: `ELeilaoStatus` (`RASCUNHO`, `AGENDADO`, `EM_ANDAMENTO`, `ENCERRADO`, `CANCELADO`), `ELoteStatus` (`DISPONIVEL`, `ENCERRADO`, `VENDIDO`, `RESERVA_NAO_ATINGIDA`), `ETipoOferta`, `ETipoLance` (`REAL` do comprador, `SIMULADO` da casa), `EStatusLance`, `EPermissao` e `EUserPermission`.
+Os enums do domínio: `ELeilaoStatus` (`RASCUNHO`, `AGENDADO`, `EM_ANDAMENTO`, `ENCERRADO`, `CANCELADO`), `ELoteStatus` (`DISPONIVEL`, `ENCERRADO`, `VENDIDO`, `RESERVA_NAO_ATINGIDA`), `ETipoOferta`, `ETipoLance` (`REAL` do comprador, `SIMULADO` da casa), `EStatusLance`, `EPermissao` (o que o grupo concede) e `EPapel` (`ADMIN`/`USER`).
 
 ## Autenticação
 
@@ -150,7 +150,7 @@ Todo erro sai no mesmo formato, `{ "code": "...", "message": "..." }`, montado p
 | `TOKEN_INVALIDO` | 401 | Token ausente, expirado ou adulterado |
 | `ACESSO_NEGADO` | 403 | Falta a permissão exigida |
 | `EMAIL_CADASTRADO` | 400 | E-mail já existe |
-| `SENHA_VAZIA` / `SENHA_CADASTRADA` | 400 | Senha nula, ou fora do padrão exigido |
+| `SENHA_VAZIA` / `SENHA_FORA_DO_PADRAO` | 400 | Senha nula, ou fora do padrão exigido |
 | `PARAMETRO_INVALIDO` | 400 | UUID malformado na URL |
 | `LEILAO_NAO_ENCONTRADO` | 404 | UUID válido, leilão inexistente |
 | `GRUPO_NAO_ENCONTRADO` / `USUARIO_NAO_ENCONTRADO` | 404 | — |
@@ -175,7 +175,22 @@ São três tópicos: `leilao.lances` com as tentativas ainda sem julgamento, `le
 
 A chave de toda mensagem é o uuid do lote, e é isso que faz os lances de um mesmo lote caírem sempre na mesma partição: eles são avaliados em fila, um de cada vez, enquanto lotes diferentes seguem em paralelo.
 
-`AvaliadorDeLances` é o único ponto do sistema que altera o valor corrente de um lote. A ordem das checagens importa, porque é ela que decide qual motivo aparece quando mais de um se aplica: uuid repetido, lote inexistente, comprador inexistente, leilão fora do ar, lote fechado, lote ainda não aberto, auto-lance, valor abaixo do próximo, incremento quebrado e, por último, valor acima do teto de sanidade. Passando por tudo, o lance entra e empurra o cronômetro se estiver perto do fim.
+`AvaliadorDeLances` é o único ponto do sistema que altera o valor corrente de um lote. Ele checa nesta ordem, e a ordem importa: é ela que decide qual motivo aparece quando mais de um se aplica.
+
+| Motivo | Quando acontece |
+|---|---|
+| `DUPLICADO` | Mesmo `lanceUuid` de novo — duplo clique, retry do cliente, reentrega do Kafka |
+| `LOTE_NAO_ENCONTRADO` | Lote inexistente |
+| `SEM_HABILITACAO` | Comprador não existe ou não pode dar lance |
+| `LEILAO_FORA_DO_AR` | Leilão não iniciado, encerrado ou cancelado |
+| `LOTE_ENCERRADO` | Lance depois do martelo |
+| `LOTE_NAO_ABERTO` | O pregão ainda não chegou nesse lote |
+| `AUTO_LANCE` | O comprador já estava ganhando |
+| `VALOR_INSUFICIENTE` | Alguém chegou antes e o preço subiu |
+| `INCREMENTO_INVALIDO` | O valor não respeita o degrau do lote |
+| `VALOR_SUSPEITO` | Acima de 100× o valor inicial — erro de digitação |
+
+Passando pelas dez, o lance entra e empurra o cronômetro se estiver perto do fim.
 
 Aceito ou recusado, o lance vira linha na tabela `lance` — `VALIDO`, ou `INVALIDO` com o motivo. É desse histórico que sai a tela de recusas. Falha de infraestrutura é outra categoria: mensagem que nem o retry processou vai para a DLT e aparece em seção separada, porque ela não chegou a ser julgada.
 
@@ -211,7 +226,7 @@ app.jwt.expiration-ms=86400000
 
 O endereço do broker aceita a variável `KAFKA_BROKERS`, e o do banco aceita `POSTGRES_HOST`.
 
-O schema tem quatro migrações: o `V1` com o esquema inicial, o `V2` movendo os dados do cavalo do lote para `animal`, o `V3` acrescentando o `uuid` público com backfill, e o `V4` trazendo o pregão — `uuid` e `motivo_recusa` no lance, `usuario_id` nulo para o lance da casa, a janela do lote e os marcos do leilão.
+O schema tem cinco migrações: o `V1` com o esquema inicial, o `V2` movendo os dados do cavalo do lote para `animal`, o `V3` acrescentando o `uuid` público com backfill, e o `V4` trazendo o pregão — `uuid` e `motivo_recusa` no lance, `usuario_id` nulo para o lance da casa, a janela do lote e os marcos do leilão. O `V5` renomeia `usuario.permissao` para `usuario.papel`, porque a coluna guarda ADMIN/USER e permissão é o que vem do grupo.
 
 ## Decisões
 

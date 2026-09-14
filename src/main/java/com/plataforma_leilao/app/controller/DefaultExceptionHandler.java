@@ -29,10 +29,10 @@ public class DefaultExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
-    @ExceptionHandler(SenhaCadastradaException.class)
-    public ResponseEntity<ErrorDTO> handlerSenhaCadastradaException(SenhaCadastradaException ex) {
+    @ExceptionHandler(SenhaForaDoPadraoException.class)
+    public ResponseEntity<ErrorDTO> handleSenhaForaDoPadrao(SenhaForaDoPadraoException ex) {
         ErrorDTO error = new ErrorDTO(
-                "SENHA_CADASTRADA",
+                "SENHA_FORA_DO_PADRAO",
                 "A senha deve ter pelo menos 8 caracteres, uma maiúscula, uma minúscula, um número e um caractere especial."
         );
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);

@@ -20,7 +20,7 @@ public class User {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private EUserPermission permissao;
+    private EPapel papel;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "grupo_id")
@@ -34,11 +34,11 @@ public class User {
     public User(String email, String senha) {
         this.email = email;
         this.senha = senha;
-        this.permissao = EUserPermission.USER;
+        this.papel = EPapel.USER;
     }
 
     public boolean isAdmin() {
-        return permissao == EUserPermission.ADMIN;
+        return papel == EPapel.ADMIN;
     }
 
     public boolean temPermissao(EPermissao desejada) {

@@ -8,9 +8,9 @@ import com.plataforma_leilao.app.config.AdminConstants;
 import com.plataforma_leilao.app.dto.LoginResponseDTO;
 import com.plataforma_leilao.app.exceptions.CredenciaisInvalidasException;
 import com.plataforma_leilao.app.exceptions.EmailCadastradoException;
-import com.plataforma_leilao.app.exceptions.SenhaCadastradaException;
+import com.plataforma_leilao.app.exceptions.SenhaForaDoPadraoException;
 import com.plataforma_leilao.app.exceptions.SenhaVaziaException;
-import com.plataforma_leilao.app.model.EUserPermission;
+import com.plataforma_leilao.app.model.EPapel;
 import com.plataforma_leilao.app.model.GrupoPermissao;
 import com.plataforma_leilao.app.model.User;
 import com.plataforma_leilao.app.repository.GrupoPermissaoRepository;
@@ -41,7 +41,7 @@ public class UserService {
         }
 
         if (!password.matches("^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@#$%^&+=!*]).{8,}$")) {
-            throw new SenhaCadastradaException();
+            throw new SenhaForaDoPadraoException();
         }
 
         String emailNormalizado = normalizar(email);
@@ -103,14 +103,14 @@ public class UserService {
                 .findByNome(AdminConstants.GRUPO_PARTICIPANTE)
                 .orElse(null);
         user.setGrupo(participante);
-        user.setPermissao(EUserPermission.USER);
+        user.setPapel(EPapel.USER);
     }
 
     private void promoverAdmin(User user) {
         GrupoPermissao admin = grupoRepository
                 .findByNome(AdminConstants.GRUPO_ADMIN)
                 .orElse(null);
-        user.setPermissao(EUserPermission.ADMIN);
+        user.setPapel(EPapel.ADMIN);
         user.setGrupo(admin);
         userRepository.save(user);
     }
