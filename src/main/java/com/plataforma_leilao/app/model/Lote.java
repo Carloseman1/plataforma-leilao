@@ -18,7 +18,6 @@ public class Lote {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /** Identificador público, usado na API e nas URLs no lugar do id sequencial. */
     @Column(nullable = false, unique = true, updatable = false)
     private UUID uuid = UUID.randomUUID();
 
@@ -55,10 +54,8 @@ public class Lote {
     @Column(nullable = false)
     private ELoteStatus status = ELoteStatus.DISPONIVEL;
 
-    /** Momento em que o pregão abriu este lote. Nulo enquanto ele espera a vez. */
     private LocalDateTime abertoEm;
 
-    /** Alvo do cronômetro. Um lance perto do fim empurra este horário para frente. */
     private LocalDateTime fechaEm;
 
     public Lote() {}
@@ -86,7 +83,6 @@ public class Lote {
         return valorReserva != null;
     }
 
-    /** Quanto vale o próximo lance, dado quem está ganhando agora. */
     public BigDecimal proximoLanceApos(Lance vencedor) {
         if (vencedor == null) {
             return valorInicial;

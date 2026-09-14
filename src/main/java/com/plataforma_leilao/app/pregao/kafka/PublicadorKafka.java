@@ -1,13 +1,14 @@
 package com.plataforma_leilao.app.pregao.kafka;
 
-import com.plataforma_leilao.app.exceptions.PregaoIndisponivelException;
-import com.plataforma_leilao.app.pregao.LanceCommand;
-import com.plataforma_leilao.app.pregao.PublicadorDeLances;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
+
+import com.plataforma_leilao.app.exceptions.PregaoIndisponivelException;
+import com.plataforma_leilao.app.pregao.LanceCommand;
+import com.plataforma_leilao.app.pregao.PublicadorDeLances;
 
 @Component
 @ConditionalOnProperty(name = "app.pregao.transporte", havingValue = "kafka", matchIfMissing = true)
@@ -25,8 +26,6 @@ public class PublicadorKafka implements PublicadorDeLances {
 
     @Override
     public void publicar(LanceCommand comando) {
-        // A chave é o lote: é ela que decide a partição e, com isso, a ordem
-        // em que os lances concorrentes desse lote vão ser avaliados.
         String chave = comando.loteUuid().toString();
 
         try {

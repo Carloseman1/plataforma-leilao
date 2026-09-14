@@ -19,6 +19,7 @@ correspondente.
 """
 
 import argparse
+import json
 import random
 import threading
 import time
@@ -26,12 +27,93 @@ import uuid
 from dataclasses import dataclass
 
 import requests
+import websocket
 
 API = "http://localhost:8080"
 
 
 class ErroDeApi(Exception):
     pass
+
+
+class ObservadorDoPregao(threading.Thread):
+    """Mostra o veredito que voltou da fila, pelo mesmo canal da tela."""
+
+    def __init__(self, uuid_leilao, token):
+        super().__init__(daemon=True)
+        self.uuid_leilao = uuid_leilao
+        self.token = token
+        self.parar = threading.Event()
+        self.conexao = None
+        self.aceitos = 0
+        self.recusados = 0
+        self.resultados_por_uuid = {}
+
+    def run(self):
+        try:
+            self.conexao = websocket.create_connection(
+                "ws://localhost:8080/ws", origin="http://localhost:5173", timeout=3
+            )
+            self.conexao.send(
+                "CONNECT\naccept-version:1.2\nhost:localhost\n"
+                f"Authorization:Bearer {self.token}\n\n\x00"
+            )
+            self.conexao.recv()
+            self.conexao.send(
+                f"SUBSCRIBE\nid:simulador\ndestination:/topic/pregao/{self.uuid_leilao}\n\n\x00"
+            )
+
+            while not self.parar.is_set():
+                try:
+                    quadro = self.conexao.recv()
+                except websocket.WebSocketTimeoutException:
+                    continue
+                self.mostrar_resultado(quadro)
+        except Exception as erro:
+            print(f"  observador: não consegui acompanhar o WebSocket ({erro})")
+        finally:
+            if self.conexao:
+                self.conexao.close()
+
+    def mostrar_resultado(self, quadro):
+        if not quadro.startswith("MESSAGE") or "\n\n" not in quadro:
+            return
+
+        corpo = quadro.split("\n\n", 1)[1].rstrip("\x00")
+        evento = json.loads(corpo)
+        if evento.get("tipo") != "LANCE":
+            return
+
+        lance = evento["lance"]
+        uuid_lance = lance["lanceUuid"]
+        if lance["aceito"]:
+            self.aceitos += 1
+            self.resultados_por_uuid[uuid_lance] = "ACEITO"
+            print(f"  aceito   {uuid_lance} | {lance['comprador']} | R$ {lance['valorTentado']}")
+            return
+
+        self.recusados += 1
+        if lance["motivo"] == "DUPLICADO":
+            primeira_decisao = self.resultados_por_uuid.get(uuid_lance, "não recebida pelo observador")
+            print("\n  === IDEMPOTÊNCIA: LANCE DUPLICADO ===")
+            print(f"  lanceUuid:        {uuid_lance}")
+            print(f"  loteUuid:         {lance['loteUuid']}")
+            print(f"  comprador:        {lance['comprador']}")
+            print(f"  valor reenviado:  R$ {lance['valorTentado']}")
+            print(f"  primeira decisão: {primeira_decisao}")
+            print("  efeito:           não criou outro lance no banco\n")
+            return
+
+        self.resultados_por_uuid[uuid_lance] = lance["motivo"]
+        print(
+            f"  recusado {uuid_lance} | {lance['motivo']} | "
+            f"{lance['comprador']} | R$ {lance['valorTentado']}"
+        )
+
+    def finalizar(self):
+        self.parar.set()
+        if self.conexao:
+            self.conexao.close()
 
 
 @dataclass
@@ -52,8 +134,6 @@ def cadastrar_se_preciso(email, senha):
     resposta = requests.post(
         f"{API}/api/user/cadastrar", json={"email": email, "password": senha}, timeout=10
     )
-    # 400 aqui quase sempre é "email já cadastrado", que é o caso normal na
-    # segunda execução do script.
     if resposta.status_code not in (200, 201, 400):
         raise ErroDeApi(f"cadastro de {email} falhou: {resposta.text}")
 
@@ -79,9 +159,6 @@ def montar_compradores(quantidade):
     return compradores
 
 
-# --------------------------------------------------------------------- pregão
-
-
 def ler_pregao(comprador, uuid_leilao):
     resposta = requests.get(
         f"{API}/api/leiloes/{uuid_leilao}/pregao", headers=comprador.cabecalhos, timeout=10
@@ -95,16 +172,16 @@ def dar_lance(comprador, uuid_lote, valor, lance_uuid=None):
     """Devolve a chave usada, para conseguir reenviar o mesmo lance depois."""
     chave = lance_uuid or str(uuid.uuid4())
 
-    requests.post(
+    resposta = requests.post(
         f"{API}/api/lotes/{uuid_lote}/lances",
         json={"lanceUuid": chave, "valor": valor},
         headers=comprador.cabecalhos,
         timeout=10,
     )
+    if resposta.status_code != 202:
+        raise ErroDeApi(f"lance {chave} não entrou na fila: {resposta.text}")
+
     return chave
-
-
-# ---------------------------------------------------------------- compradores
 
 
 def disputar(comprador, uuid_leilao, parar, agressividade):
@@ -124,7 +201,6 @@ def disputar(comprador, uuid_leilao, parar, agressividade):
             time.sleep(1)
             continue
 
-        # Quem já está ganhando não cobre o próprio lance.
         if lote.get("comprador") == comprador.email:
             time.sleep(0.5)
             continue
@@ -133,9 +209,6 @@ def disputar(comprador, uuid_leilao, parar, agressividade):
             dar_lance(comprador, lote["uuid"], float(lote["proximoLance"]))
 
         time.sleep(random.uniform(0.4, 2.0))
-
-
-# --------------------------------------------------------------------- caos
 
 
 def provocar_casos(comprador, uuid_leilao, parar):
@@ -157,10 +230,13 @@ def provocar_casos(comprador, uuid_leilao, parar):
         inicial = float(lote["valorInicial"])
 
         # Lance repetido: mesma chave enviada duas vezes.
-        chave = dar_lance(comprador, lote["uuid"], proximo)
+        chave = str(uuid.uuid4())
+        print("\n  --- teste de idempotência ---")
+        print(f"  envio 1 | valor: R$ {proximo} | lanceUuid: {chave}")
+        dar_lance(comprador, lote["uuid"], proximo, lance_uuid=chave)
         time.sleep(0.2)
         dar_lance(comprador, lote["uuid"], proximo, lance_uuid=chave)
-        print("  caos: reenviei o mesmo lance (deve recusar como repetido)")
+        print(f"  envio 2 | valor: R$ {proximo} | lanceUuid: {chave} (reenvio)")
 
         time.sleep(2)
         dar_lance(comprador, lote["uuid"], max(proximo - incremento, 1))
@@ -174,8 +250,6 @@ def provocar_casos(comprador, uuid_leilao, parar):
         dar_lance(comprador, lote["uuid"], inicial * 500)
         print("  caos: valor absurdo")
 
-        # Lote já encerrado: guarda o lote de agora e volta nele depois que o
-        # pregão tiver passado adiante.
         lote_antigo = lote["uuid"]
         time.sleep(8)
         dar_lance(comprador, lote_antigo, proximo + incremento)
@@ -227,11 +301,17 @@ def main():
         print("O pregão não está no ar. Abra pelo botão 'Abrir pregão' na tela e rode de novo.")
         return
 
+    observador = ObservadorDoPregao(argumentos.leilao, compradores[0].token)
+    observador.start()
+    time.sleep(0.5)
+
     if argumentos.empate:
         lote = pregao["loteAtual"]
         print(f"Disparando {len(compradores)} lances iguais em {lote['nomeAnimal']}…")
         disputa_simultanea(compradores, lote["uuid"], float(lote["proximoLance"]))
-        print("Pronto. Só um deve ter entrado — os outros estão na tela de recusas.")
+        time.sleep(2)
+        observador.finalizar()
+        print(f"Pronto. Aceitos: {observador.aceitos}; recusados: {observador.recusados}.")
         return
 
     parar = threading.Event()
@@ -266,8 +346,9 @@ def main():
         parar.set()
         for thread in threads:
             thread.join(timeout=3)
+        observador.finalizar()
 
-    print("Fim.")
+    print(f"Fim. Aceitos: {observador.aceitos}; recusados: {observador.recusados}.")
 
 
 if __name__ == "__main__":

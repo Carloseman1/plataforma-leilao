@@ -1,10 +1,11 @@
 package com.plataforma_leilao.app.dto;
 
-import com.plataforma_leilao.app.model.ELeilaoStatus;
-import lombok.Data;
-
 import java.time.LocalDateTime;
 import java.util.UUID;
+
+import com.plataforma_leilao.app.model.ELeilaoStatus;
+
+import lombok.Data;
 
 @Data
 public class LeilaoResumoDTO {
@@ -18,8 +19,8 @@ public class LeilaoResumoDTO {
     private int qtdLotes;
 
     public LeilaoResumoDTO(UUID uuid, String titulo, String subtitulo, String local,
-                           LocalDateTime dataInicio, LocalDateTime dataFim,
-                           ELeilaoStatus status, int qtdLotes) {
+            LocalDateTime dataInicio, LocalDateTime dataFim,
+            ELeilaoStatus status, int qtdLotes) {
         this.uuid = uuid;
         this.titulo = titulo;
         this.subtitulo = subtitulo;

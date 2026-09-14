@@ -1,6 +1,21 @@
-# Broker do pregão. Redpanda fala a API do Kafka, então o código Java é o mesmo
-# que seria com o Kafka oficial — muda só o que sobe aqui.
 services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: leilao-postgres
+    environment:
+      POSTGRES_DB: plataforma-leilao
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d plataforma-leilao"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+
   redpanda:
     image: redpandadata/redpanda:v24.2.7
     container_name: leilao-redpanda
@@ -23,7 +38,6 @@ services:
       timeout: 3s
       retries: 12
 
-  # Painel web do broker: dá para ver os tópicos, as partições e as mensagens cruas.
   console:
     image: redpandadata/console:v2.7.2
     container_name: leilao-redpanda-console
@@ -34,3 +48,6 @@ services:
       - "8081:8080"
     environment:
       KAFKA_BROKERS: redpanda:29092
+
+volumes:
+  postgres_data:

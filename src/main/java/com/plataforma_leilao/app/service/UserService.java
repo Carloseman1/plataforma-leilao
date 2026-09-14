@@ -43,13 +43,19 @@ public class UserService {
             throw new SenhaCadastradaException();
         }
 
+        if (userRepository.findByEmail(email).isPresent()) {
+            throw new EmailCadastradoException();
+        }
+
         User user = new User(email, encoder.encode(password));
         aplicarGrupoPadrao(user);
 
         try {
             userRepository.save(user);
         } catch (DataIntegrityViolationException e) {
-            if (e.getMessage() != null && e.getMessage().contains("Duplicate entry")) {
+            if (e.getMessage() != null && (
+                    e.getMessage().contains("Duplicate entry")
+                    || e.getMessage().contains("usuario_email_key"))) {
                 throw new EmailCadastradoException();
             }
             throw e;

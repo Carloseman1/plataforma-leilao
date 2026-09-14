@@ -4,13 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-/**
- * Avalia o lance e conta o resultado para quem está assistindo.
- *
- * Fica entre o transporte e a regra de negócio: tanto o consumidor do Kafka
- * quanto o modo direto passam por aqui, então o que acontece depois de um lance
- * é o mesmo nos dois caminhos.
- */
 @Service
 public class ProcessadorDeLances {
 

@@ -16,7 +16,6 @@ const FORM_VAZIO = {
   incrementoMinimo: 500,
 }
 
-/** Campos em branco viram null para não gravar string vazia no banco. */
 function ouNulo(texto) {
   return texto.trim() || null
 }
@@ -36,7 +35,6 @@ export default function useNovoLote(uuidLeilao, aoCriar) {
     setSalvando(true)
 
     try {
-      // O número do lote fica por conta do backend, que sabe qual é o próximo livre.
       await adicionarLote(uuidLeilao, {
         tipoOferta: form.tipoOferta,
         descricaoOferta: ouNulo(form.descricaoOferta),

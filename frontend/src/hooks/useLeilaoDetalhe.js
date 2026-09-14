@@ -7,7 +7,6 @@ export default function useLeilaoDetalhe(uuid) {
   const [erro, setErro] = useState('')
   const [recargas, setRecargas] = useState(0)
 
-  // Mexer no contador faz o efeito abaixo buscar o leilão de novo.
   const recarregar = useCallback(() => setRecargas((total) => total + 1), [])
 
   useEffect(() => {

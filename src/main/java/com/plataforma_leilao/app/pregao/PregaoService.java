@@ -1,29 +1,31 @@
 package com.plataforma_leilao.app.pregao;
 
-import com.plataforma_leilao.app.exceptions.LeilaoNaoEncontradoException;
-import com.plataforma_leilao.app.exceptions.PregaoInvalidoException;
-import com.plataforma_leilao.app.model.*;
-import com.plataforma_leilao.app.repository.LanceRepository;
-import com.plataforma_leilao.app.repository.LeilaoRepository;
-import com.plataforma_leilao.app.repository.LoteRepository;
-import com.plataforma_leilao.app.service.PermissaoService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-/**
- * O leiloeiro: abre o pregão, passa de lote em lote e bate o martelo.
- *
- * Os lances não passam por aqui — quem decide lance é o {@link AvaliadorDeLances},
- * do outro lado da fila. Esta classe cuida da moldura em volta deles.
- */
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.plataforma_leilao.app.exceptions.LeilaoNaoEncontradoException;
+import com.plataforma_leilao.app.exceptions.PregaoInvalidoException;
+import com.plataforma_leilao.app.model.Animal;
+import com.plataforma_leilao.app.model.ELeilaoStatus;
+import com.plataforma_leilao.app.model.ELoteStatus;
+import com.plataforma_leilao.app.model.EPermissao;
+import com.plataforma_leilao.app.model.EStatusLance;
+import com.plataforma_leilao.app.model.Lance;
+import com.plataforma_leilao.app.model.Leilao;
+import com.plataforma_leilao.app.model.Lote;
+import com.plataforma_leilao.app.repository.LanceRepository;
+import com.plataforma_leilao.app.repository.LeilaoRepository;
+import com.plataforma_leilao.app.repository.LoteRepository;
+import com.plataforma_leilao.app.service.PermissaoService;
+
 @Service
 public class PregaoService {
 
@@ -37,11 +39,11 @@ public class PregaoService {
     private final PregaoProperties propriedades;
 
     public PregaoService(LeilaoRepository leilaoRepository,
-                         LoteRepository loteRepository,
-                         LanceRepository lanceRepository,
-                         PermissaoService permissaoService,
-                         PainelDoPregao painel,
-                         PregaoProperties propriedades) {
+            LoteRepository loteRepository,
+            LanceRepository lanceRepository,
+            PermissaoService permissaoService,
+            PainelDoPregao painel,
+            PregaoProperties propriedades) {
         this.leilaoRepository = leilaoRepository;
         this.loteRepository = loteRepository;
         this.lanceRepository = lanceRepository;
@@ -49,8 +51,6 @@ public class PregaoService {
         this.painel = painel;
         this.propriedades = propriedades;
     }
-
-    // ---------------------------------------------------------------- comandos
 
     @Transactional
     public PregaoDTO iniciar(UUID uuidLeilao) {
@@ -78,7 +78,6 @@ public class PregaoService {
         return montar(leilao);
     }
 
-    /** O leiloeiro bate o martelo antes do cronômetro acabar. */
     @Transactional
     public PregaoDTO avancar(UUID uuidLeilao) {
         permissaoService.exigir(EPermissao.CRIAR_LEILAO);
@@ -108,10 +107,35 @@ public class PregaoService {
         return montar(leilao);
     }
 
-    /**
-     * Fim do cronômetro. Chamado pelo relógio, sem usuário por trás, então não
-     * passa por checagem de permissão.
-     */
+    @Transactional
+    public PregaoDTO reabrir(UUID uuidLeilao) {
+        permissaoService.exigir(EPermissao.CRIAR_LEILAO);
+
+        Leilao leilao = buscar(uuidLeilao);
+        if (leilao.getStatus() != ELeilaoStatus.ENCERRADO) {
+            throw new PregaoInvalidoException("Só é possível reabrir um pregão encerrado.");
+        }
+
+        Lote ultimoLote = leilao.getLotes().stream()
+                .filter(lote -> lote.getStatus() != ELoteStatus.DISPONIVEL)
+                .max(Comparator.comparing(Lote::getNumero))
+                .orElseThrow(() -> new PregaoInvalidoException("Este pregão não tem lote para reabrir."));
+
+        LocalDateTime agora = LocalDateTime.now();
+        ultimoLote.setStatus(ELoteStatus.DISPONIVEL);
+        ultimoLote.setAbertoEm(agora);
+        ultimoLote.setFechaEm(agora.plusSeconds(propriedades.getSegundosPorLote()));
+
+        leilao.setStatus(ELeilaoStatus.EM_ANDAMENTO);
+        leilao.setEncerradoEm(null);
+
+        log.info("Pregão reaberto no lote {}: {}", ultimoLote.getNumero(), leilao.getTitulo());
+        painel.anunciarPregao(uuidLeilao);
+        painel.anunciarLote(uuidLeilao, aoVivo(ultimoLote));
+
+        return montar(leilao);
+    }
+
     @Transactional
     public void baterMartelo(UUID uuidLote) {
         Lote lote = loteRepository.travarPorUuid(uuidLote).orElse(null);
@@ -127,8 +151,6 @@ public class PregaoService {
 
         painel.anunciarPregao(leilao.getUuid());
     }
-
-    // ------------------------------------------------------------ mecânica
 
     private Optional<Lote> abrirProximoLote(Leilao leilao) {
         Optional<Lote> proximo = leilao.getLotes().stream()
@@ -156,12 +178,6 @@ public class PregaoService {
         painel.anunciarLote(lote.getLeilao().getUuid(), aoVivo(lote));
     }
 
-    /**
-     * Como o lote termina.
-     *
-     * O lance da casa segura o preço até a reserva, mas não compra: se ele for o
-     * último de pé, o lote fecha sem venda, no valor em que a casa parou.
-     */
     private ELoteStatus desfechoDe(Lote lote, Lance vencedor) {
         if (vencedor == null) {
             return ELoteStatus.ENCERRADO;
@@ -194,8 +210,6 @@ public class PregaoService {
         return leilao.getLotes().stream().filter(Lote::estaAberto).findFirst();
     }
 
-    // ---------------------------------------------------------------- leitura
-
     @Transactional(readOnly = true)
     public PregaoDTO estado(UUID uuidLeilao) {
         return montar(buscar(uuidLeilao));
@@ -222,8 +236,7 @@ public class PregaoService {
                 leilao.getEncerradoEm(),
                 loteAberto(leilao).map(this::aoVivo).orElse(null),
                 naFila,
-                encerrados
-        );
+                encerrados);
     }
 
     LoteAoVivoDTO aoVivo(Lote lote) {
@@ -248,8 +261,7 @@ public class PregaoService {
                 vencedor == null ? null : nomeDe(vencedor),
                 vencedor != null && vencedor.ehDaCasa(),
                 lote.getAbertoEm(),
-                lote.getFechaEm()
-        );
+                lote.getFechaEm());
     }
 
     private Optional<Lance> vencedorDe(Lote lote) {

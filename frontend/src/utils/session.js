@@ -22,7 +22,6 @@ function decodificarPayload(token) {
   }
 }
 
-/** Momento (ms) em que o JWT expira, ou null se o token não declarar `exp`. */
 export function getExpiracaoToken(token) {
   const exp = decodificarPayload(token)?.exp
   return typeof exp === 'number' ? exp * 1000 : null
@@ -33,7 +32,6 @@ export function tokenExpirado(token) {
   return expiraEm !== null && expiraEm <= Date.now()
 }
 
-/** Sessão válida, ou null. Uma sessão com token expirado é descartada do storage. */
 export function getSessao() {
   const sessao = lerSessao(localStorage) || lerSessao(sessionStorage)
 

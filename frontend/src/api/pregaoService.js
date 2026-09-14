@@ -16,10 +16,10 @@ export function encerrarPregao(uuidLeilao) {
   return post(`/api/leiloes/${uuidLeilao}/pregao/encerrar`, {})
 }
 
-/**
- * O lanceUuid vai daqui de propósito: reenviar o mesmo lance com a mesma chave
- * é reconhecido como repetição no servidor, em vez de virar um segundo lance.
- */
+export function reabrirPregao(uuidLeilao) {
+  return post(`/api/leiloes/${uuidLeilao}/pregao/reabrir`, {})
+}
+
 export function darLance(uuidLote, valor, lanceUuid) {
   return post(`/api/lotes/${uuidLote}/lances`, { lanceUuid, valor })
 }

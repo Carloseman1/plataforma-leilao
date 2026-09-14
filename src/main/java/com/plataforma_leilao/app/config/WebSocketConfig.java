@@ -1,6 +1,5 @@
 package com.plataforma_leilao.app.config;
 
-import com.plataforma_leilao.app.security.JwtService;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
@@ -14,13 +13,8 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
-/**
- * Canal ao vivo do pregão.
- *
- * O broker é o simples, em memória: o que trafega aqui é o estado corrente de um
- * leilão, e a fonte da verdade continua sendo o banco — quem entra no meio do
- * pregão carrega o estado por REST e só então assina o canal.
- */
+import com.plataforma_leilao.app.security.JwtService;
+
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
@@ -43,11 +37,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 .setAllowedOriginPatterns("http://localhost:*");
     }
 
-    /**
-     * O handshake do WebSocket não passa pelo filtro de JWT das rotas /api, então
-     * o token é conferido aqui, no CONNECT do STOMP. Sem isso qualquer um
-     * assinaria o canal de qualquer leilão.
-     */
     @Override
     public void configureClientInboundChannel(ChannelRegistration registro) {
         registro.interceptors(new ChannelInterceptor() {

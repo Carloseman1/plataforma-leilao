@@ -1,10 +1,3 @@
-/**
- * Botões para reproduzir cada recusa na hora, sem depender do simulador.
- *
- * O valor de cada botão é escolhido para bater numa regra específica do
- * avaliador — serve para conferir a tela de recusas e para demonstrar o que
- * cada caso significa.
- */
 export default function ProvocarCasos({ lote, aoEnviar, aoReenviar, temUltimoLance }) {
   const proximo = Number(lote.proximoLance)
   const incremento = Number(lote.incrementoMinimo)

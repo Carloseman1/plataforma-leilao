@@ -33,7 +33,7 @@ O Flyway cria e migra o schema sozinho na inicialização. Só é preciso o banc
 CREATE DATABASE "plataforma-leilao";
 ```
 
-As credenciais estão em `src/main/resources/application.properties` (`postgres` / `admin123`).
+As credenciais estão em `src/main/resources/application.properties` (`postgres` / `xxxx`).
 
 > `spring.jpa.hibernate.ddl-auto=validate`. O Hibernate não altera a estrutura do banco: quem faz isso é o Flyway. Campo novo na entidade sem migração correspondente derruba a aplicação na inicialização.
 

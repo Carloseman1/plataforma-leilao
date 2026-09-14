@@ -1,6 +1,6 @@
 package com.plataforma_leilao.app.config;
 
-import com.plataforma_leilao.app.pregao.kafka.Topicos;
+import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.common.TopicPartition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -9,8 +9,9 @@ import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.DeadLetterPublishingRecoverer;
 import org.springframework.kafka.listener.DefaultErrorHandler;
-import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.util.backoff.FixedBackOff;
+
+import com.plataforma_leilao.app.pregao.kafka.Topicos;
 
 @Configuration
 @ConditionalOnProperty(name = "app.pregao.transporte", havingValue = "kafka", matchIfMissing = true)
@@ -40,17 +41,11 @@ public class KafkaConfig {
                 .build();
     }
 
-    /**
-     * Um lance que falhar é tentado mais três vezes antes de ir para a DLT.
-     * A reentrega é segura porque o avaliador reconhece o uuid repetido — sem
-     * essa dedupe, o retry viraria lance duplicado.
-     */
     @Bean
     DefaultErrorHandler tratadorDeErroDoPregao(KafkaTemplate<String, String> kafka) {
         DeadLetterPublishingRecoverer paraDLT = new DeadLetterPublishingRecoverer(
                 kafka,
-                (registro, excecao) -> new TopicPartition(Topicos.FALHAS, 0)
-        );
+                (registro, excecao) -> new TopicPartition(Topicos.FALHAS, 0));
 
         return new DefaultErrorHandler(paraDLT, new FixedBackOff(500L, 3L));
     }

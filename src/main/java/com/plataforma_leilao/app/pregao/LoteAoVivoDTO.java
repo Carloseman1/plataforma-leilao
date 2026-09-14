@@ -7,7 +7,6 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-/** Um lote do jeito que a tela do pregão precisa vê-lo. */
 public record LoteAoVivoDTO(
         UUID uuid,
         Integer numero,

@@ -6,7 +6,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-/** Estado completo do pregão: serve para abrir a tela e para reconciliar depois de uma queda. */
 public record PregaoDTO(
         UUID leilaoUuid,
         String titulo,

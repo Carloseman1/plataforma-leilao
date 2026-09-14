@@ -9,7 +9,7 @@ import ProvocarCasos from '../components/pregao/ProvocarCasos'
 import useAuth from '../hooks/useAuth'
 import usePregao from '../hooks/usePregao'
 import useDarLance from '../hooks/useDarLance'
-import { avancarPregao, encerrarPregao, iniciarPregao } from '../api/pregaoService'
+import { avancarPregao, encerrarPregao, iniciarPregao, reabrirPregao } from '../api/pregaoService'
 import { formatarMoeda, rotuloStatus } from '../utils/format'
 import { PERMISSOES, temPermissao } from '../utils/permissions'
 import '../styles/catalog.css'
@@ -73,6 +73,9 @@ export default function PregaoPage() {
                 <div className="pregao-comandos">
                   {pregao.status !== 'EM_ANDAMENTO' && pregao.status !== 'ENCERRADO' && (
                     <Button onClick={() => comandar(iniciarPregao)}>Abrir pregão</Button>
+                  )}
+                  {pregao.status === 'ENCERRADO' && (
+                    <Button onClick={() => comandar(reabrirPregao)}>Reabrir último lote</Button>
                   )}
                   {pregao.status === 'EM_ANDAMENTO' && (
                     <>

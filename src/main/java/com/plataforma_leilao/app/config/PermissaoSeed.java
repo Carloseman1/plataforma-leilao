@@ -1,17 +1,17 @@
 package com.plataforma_leilao.app.config;
 
-import com.plataforma_leilao.app.model.EPermissao;
-import com.plataforma_leilao.app.model.EUserPermission;
-import com.plataforma_leilao.app.model.GrupoPermissao;
-import com.plataforma_leilao.app.model.User;
-import com.plataforma_leilao.app.repository.GrupoPermissaoRepository;
-import com.plataforma_leilao.app.repository.UserRepository;
+import java.util.EnumSet;
+
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import java.util.EnumSet;
+import com.plataforma_leilao.app.model.EPermissao;
+import com.plataforma_leilao.app.model.EUserPermission;
+import com.plataforma_leilao.app.model.GrupoPermissao;
+import com.plataforma_leilao.app.repository.GrupoPermissaoRepository;
+import com.plataforma_leilao.app.repository.UserRepository;
 
 @Component
 @Order(1)
@@ -22,8 +22,7 @@ public class PermissaoSeed implements ApplicationRunner {
 
     public PermissaoSeed(
             GrupoPermissaoRepository grupoRepository,
-            UserRepository userRepository
-    ) {
+            UserRepository userRepository) {
         this.grupoRepository = grupoRepository;
         this.userRepository = userRepository;
     }
@@ -40,8 +39,7 @@ public class PermissaoSeed implements ApplicationRunner {
                 .orElseGet(() -> {
                     GrupoPermissao grupo = new GrupoPermissao(
                             AdminConstants.GRUPO_ADMIN,
-                            "Acesso total: criar leilões e gerenciar permissões"
-                    );
+                            "Acesso total: criar leilões e gerenciar permissões");
                     grupo.setPermissoes(EnumSet.allOf(EPermissao.class));
                     return grupoRepository.save(grupo);
                 });
@@ -53,8 +51,7 @@ public class PermissaoSeed implements ApplicationRunner {
         }
         GrupoPermissao grupo = new GrupoPermissao(
                 AdminConstants.GRUPO_PARTICIPANTE,
-                "Usuário comum: acompanha leilões e dá lances"
-        );
+                "Usuário comum: acompanha leilões e dá lances");
         grupoRepository.save(grupo);
     }
 

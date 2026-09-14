@@ -4,14 +4,6 @@ import { buscarPregao } from '../api/pregaoService'
 
 const LANCES_NO_FEED = 30
 
-/**
- * Estado do pregão ao vivo.
- *
- * O estado completo vem por REST; o canal traz o que muda com a tela aberta.
- * Lance aceito é aplicado na hora para a tela responder rápido, e troca de lote
- * ou de status do leilão recarrega tudo — nesses casos muita coisa muda junto e
- * remendar em pedaços sairia errado.
- */
 export default function usePregao(uuidLeilao) {
   const [pregao, setPregao] = useState(null)
   const [lances, setLances] = useState([])
@@ -30,8 +22,6 @@ export default function usePregao(uuidLeilao) {
     }
   }, [uuidLeilao])
 
-  // O canal precisa chamar a versão mais recente de recarregar sem se reassinar
-  // a cada render.
   const recarregarRef = useRef(recarregar)
 
   useEffect(() => {

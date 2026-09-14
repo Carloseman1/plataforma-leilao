@@ -16,14 +16,8 @@ public interface LoteRepository extends JpaRepository<Lote, Long> {
 
     Optional<Lote> findByUuid(UUID uuid);
 
-    /** Lotes com o pregão aberto — é o que o martelo e o lance da casa vigiam. */
     List<Lote> findByStatusAndAbertoEmNotNull(ELoteStatus status);
 
-    /**
-     * Trava a linha do lote enquanto um lance é avaliado. A fila do Kafka já
-     * entrega um lance de cada vez por lote; a trava cobre o resto — rebalance
-     * de consumidor, reprocessamento e o modo direto, que não tem partição.
-     */
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select l from Lote l where l.uuid = :uuid")
     Optional<Lote> travarPorUuid(@Param("uuid") UUID uuid);

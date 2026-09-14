@@ -1,12 +1,20 @@
 package com.plataforma_leilao.app.model;
 
-import jakarta.persistence.*;
+import java.time.LocalDate;
+import java.util.UUID;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-
-import java.time.LocalDate;
-import java.util.UUID;
 
 @Entity
 @Table(name = "animal")
@@ -17,7 +25,6 @@ public class Animal {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /** Identificador público, usado na API e nas URLs no lugar do id sequencial. */
     @Column(nullable = false, unique = true, updatable = false)
     private UUID uuid = UUID.randomUUID();
 
@@ -57,10 +64,11 @@ public class Animal {
     @EqualsAndHashCode.Exclude
     private Animal mae;
 
-    public Animal() {}
+    public Animal() {
+    }
 
     public Animal(String nome, String registro, String raca, String sexo,
-                  LocalDate dataNascimento, String pelagem, String modalidadeMarcha) {
+            LocalDate dataNascimento, String pelagem, String modalidadeMarcha) {
         this.nome = nome;
         this.registro = registro;
         this.raca = raca;

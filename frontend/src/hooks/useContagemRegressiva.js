@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 
-/** Segundos que faltam até o horário informado, atualizados a cada segundo. */
 export default function useContagemRegressiva(fechaEm) {
   const [restantes, setRestantes] = useState(() => segundosAte(fechaEm))
 

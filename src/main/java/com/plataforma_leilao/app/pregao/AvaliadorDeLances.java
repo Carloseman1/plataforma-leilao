@@ -1,23 +1,23 @@
 package com.plataforma_leilao.app.pregao;
 
-import com.plataforma_leilao.app.model.*;
-import com.plataforma_leilao.app.repository.LanceRepository;
-import com.plataforma_leilao.app.repository.LoteRepository;
-import com.plataforma_leilao.app.repository.UserRepository;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-/**
- * Decide se um lance entra ou não. É o único ponto do sistema que altera o valor
- * corrente de um lote, e avalia um lance de cada vez por lote.
- *
- * Todo lance avaliado vira linha na tabela — aceito com status VALIDO, recusado
- * com status INVALIDO e o motivo. É desse histórico que sai a tela de recusas.
- */
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.plataforma_leilao.app.model.ELoteStatus;
+import com.plataforma_leilao.app.model.EMotivoRecusa;
+import com.plataforma_leilao.app.model.EStatusLance;
+import com.plataforma_leilao.app.model.ETipoLance;
+import com.plataforma_leilao.app.model.Lance;
+import com.plataforma_leilao.app.model.Lote;
+import com.plataforma_leilao.app.model.User;
+import com.plataforma_leilao.app.repository.LanceRepository;
+import com.plataforma_leilao.app.repository.LoteRepository;
+import com.plataforma_leilao.app.repository.UserRepository;
+
 @Service
 public class AvaliadorDeLances {
 
@@ -27,9 +27,9 @@ public class AvaliadorDeLances {
     private final PregaoProperties propriedades;
 
     public AvaliadorDeLances(LoteRepository loteRepository,
-                             LanceRepository lanceRepository,
-                             UserRepository userRepository,
-                             PregaoProperties propriedades) {
+            LanceRepository lanceRepository,
+            UserRepository userRepository,
+            PregaoProperties propriedades) {
         this.loteRepository = loteRepository;
         this.lanceRepository = lanceRepository;
         this.userRepository = userRepository;
@@ -45,7 +45,6 @@ public class AvaliadorDeLances {
 
         Optional<Lote> encontrado = loteRepository.travarPorUuid(comando.loteUuid());
         if (encontrado.isEmpty()) {
-            // Sem lote não há onde gravar o histórico; sobra o resultado avulso.
             return LanceResultado.recusado(comando.lanceUuid(), comando.loteUuid(), null,
                     EMotivoRecusa.LOTE_NAO_ENCONTRADO, comando.valor(), null, null,
                     "—", comando.tipo() == ETipoLance.SIMULADO);
@@ -68,10 +67,6 @@ public class AvaliadorDeLances {
         return aceitar(comando, lote, comprador);
     }
 
-    /**
-     * Checagens em ordem de precedência: primeiro se o pregão está de pé, depois
-     * quem está dando o lance, e só então o valor.
-     */
     private EMotivoRecusa procurarImpedimento(LanceCommand comando, Lote lote, User comprador) {
         if (!lote.getLeilao().estaNoAr()) {
             return EMotivoRecusa.LEILAO_FORA_DO_AR;
@@ -117,8 +112,7 @@ public class AvaliadorDeLances {
                 comando.valor(),
                 comando.valor().add(lote.getIncrementoMinimo()),
                 nomeDoComprador(comprador),
-                lance.ehDaCasa()
-        );
+                lance.ehDaCasa());
     }
 
     private LanceResultado recusar(LanceCommand comando, Lote lote, User comprador, EMotivoRecusa motivo) {
@@ -137,14 +131,9 @@ public class AvaliadorDeLances {
                 vencedor == null ? null : vencedor.getValor(),
                 lote.proximoLanceApos(vencedor),
                 nomeDoComprador(comprador),
-                lance.ehDaCasa()
-        );
+                lance.ehDaCasa());
     }
 
-    /**
-     * Um lance que chega no fim do cronômetro empurra o fechamento. Sem isso,
-     * todo mundo espera o último segundo e ganha quem tem a rede mais rápida.
-     */
     private void adiarFechamentoSePerto(Lote lote) {
         if (lote.getFechaEm() == null) {
             return;
@@ -156,7 +145,6 @@ public class AvaliadorDeLances {
         }
     }
 
-    /** Resposta para a tentativa repetida: conta o que aconteceu da primeira vez. */
     private LanceResultado resultadoRepetido(Lance original) {
         Lote lote = original.getLote();
         Lance vencedor = vencedorAtual(lote).orElse(null);
@@ -170,15 +158,13 @@ public class AvaliadorDeLances {
                 vencedor == null ? null : vencedor.getValor(),
                 lote.proximoLanceApos(vencedor),
                 nomeDoComprador(original.getUsuario()),
-                original.ehDaCasa()
-        );
+                original.ehDaCasa());
     }
 
     private Optional<Lance> vencedorAtual(Lote lote) {
         return lanceRepository.findTopByLoteIdAndStatusOrderByValorDesc(lote.getId(), EStatusLance.VALIDO);
     }
 
-    /** O que passa do próximo lance tem que ser múltiplo do incremento combinado. */
     private boolean respeitaIncremento(BigDecimal valor, BigDecimal proximo, BigDecimal incremento) {
         if (incremento.signum() <= 0) {
             return true;

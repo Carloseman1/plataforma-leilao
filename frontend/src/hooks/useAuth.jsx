@@ -16,8 +16,6 @@ export function AuthProvider({ children }) {
     setUsuario(null)
   }, [])
 
-  // Mantém o estado alinhado ao storage: outra aba que fez login/logout, ou um
-  // token que expirou enquanto a aba estava em segundo plano.
   const sincronizar = useCallback(() => {
     const sessao = getSessao()
     setUsuario((anterior) => {
@@ -38,8 +36,6 @@ export function AuthProvider({ children }) {
     }
   }, [sincronizar])
 
-  // Encerra a sessão no exato momento em que o JWT expira, sem depender de
-  // uma nova requisição para descobrir que o token morreu.
   useEffect(() => {
     if (!usuario?.token) return undefined
 

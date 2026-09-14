@@ -4,7 +4,6 @@ import lombok.Data;
 
 import java.time.LocalDate;
 
-/** Dados de um animal novo, enviados junto com o lote que vai colocá-lo em leilão. */
 @Data
 public class AnimalRequest {
     private String nome;

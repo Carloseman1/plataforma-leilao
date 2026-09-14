@@ -1,6 +1,5 @@
 import { formatarMoeda } from '../../utils/format'
 
-/** O que está entrando na fila, aceito ou recusado, na ordem em que foi julgado. */
 export default function FeedDeLances({ lances }) {
   if (lances.length === 0) {
     return <p className="catalog-state">Nenhum lance ainda.</p>
@@ -10,7 +9,7 @@ export default function FeedDeLances({ lances }) {
     <ul className="feed-lances">
       {lances.map((lance) => (
         <li
-          key={lance.lanceUuid}
+          key={`${lance.lanceUuid}-${lance.decididoEm}`}
           className={`feed-item ${lance.aceito ? 'feed-item--aceito' : 'feed-item--recusado'}`}
         >
           <span className="feed-valor">{formatarMoeda(lance.valorTentado)}</span>

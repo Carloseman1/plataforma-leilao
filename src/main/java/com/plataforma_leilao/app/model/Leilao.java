@@ -17,7 +17,6 @@ public class Leilao {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /** Identificador público, usado na API e nas URLs no lugar do id sequencial. */
     @Column(nullable = false, unique = true, updatable = false)
     private UUID uuid = UUID.randomUUID();
 
@@ -54,7 +53,6 @@ public class Leilao {
         this.status = status;
     }
 
-    /** Momento em que o leiloeiro abriu o pregão. */
     private LocalDateTime iniciadoEm;
 
     private LocalDateTime encerradoEm;
@@ -64,7 +62,6 @@ public class Leilao {
         lote.setLeilao(this);
     }
 
-    /** Próximo número livre, para quem adiciona um lote sem informar o número. */
     public int proximoNumeroDeLote() {
         return lotes.stream()
                 .mapToInt(Lote::getNumero)

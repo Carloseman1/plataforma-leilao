@@ -9,7 +9,6 @@ export function rotuloOferta(tipo) {
   return TIPOS_DE_OFERTA.find((item) => item.valor === tipo)?.rotulo || tipo
 }
 
-/** O formulário pede a idade em anos; o backend guarda a data de nascimento. */
 export function nascimentoPorIdade(idadeAnos) {
   if (!idadeAnos) return null
   const data = new Date()
